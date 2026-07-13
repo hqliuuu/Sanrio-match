@@ -1,0 +1,37 @@
+{
+  "id": "my_melody",
+  "name": "My Melody",
+  "name_ja": "マイメロディ",
+  "name_zh": "美乐蒂",
+  "birthday": "1月18日",
+  "birthplace": "马里兰乐园",
+  "species": "兔子",
+  "gender": "女",
+  "personality": "天真、善良、有点迷糊",
+  "hobbies": ["和奶奶一起做饼干", "采花", "和朋友们玩耍"],
+  "favorite_food": "杏仁蛋糕",
+  "favorite_color": "粉色",
+  "family": {
+    "father": "未命名",
+    "mother": "未命名",
+    "grandmother": "Melody奶奶",
+    "brother": "Rhythm"
+  },
+  "best_friend": "Flat（一只老鼠）",
+  "rival": "Kuromi（库洛米，其实是她的朋友）",
+  "description": "My Melody是一只戴着粉色头巾（通常有白色蝴蝶结）的白色小兔子。她来自马里兰乐园，性格天真烂漫，非常喜欢烘焙和采集鲜花。她和Kuromi有着复杂的友谊关系，经常互相帮助。",
+  "in_game": {
+    "role": "第一章配角，后续章节主角",
+    "special_ability": "音乐魔法 - 消除一整行或一列的元素",
+    "unlock_at": "完成第一章第3关"
+  },
+  "expressions": [
+    "normal",
+    "happy",
+    "excited",
+    "loving",
+    "surprised",
+    "worried",
+    "determined"
+  ]
+}

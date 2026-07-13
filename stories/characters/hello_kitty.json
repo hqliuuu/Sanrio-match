@@ -1,0 +1,42 @@
+{
+  "id": "hello_kitty",
+  "name": "Hello Kitty",
+  "name_ja": "ハローキティ",
+  "name_zh": "凯蒂猫",
+  "birthday": "11月1日",
+  "birthplace": "英国伦敦",
+  "species": "猫（但不是真正的猫，而是小女孩）",
+  "gender": "女",
+  "height": "5个苹果高",
+  "weight": "3个苹果重",
+  "personality": "温柔、友善、体贴",
+  "hobbies": ["烘焙饼干", "弹钢琴", "收集蝴蝶结"],
+  "favorite_food": "妈妈做的苹果派",
+  "favorite_color": "红色",
+  "family": {
+    "father": "George White",
+    "mother": "Mary White",
+    "twin_sister": "Mimmy（戴黄色蝴蝶结）"
+  },
+  "boyfriend": "Dear Daniel",
+  "pet": "Charmmy Kitty（一只白色的波斯猫）",
+  "description": "Hello Kitty是世界上最受欢迎的三丽鸥角色之一。她总是戴着红色或粉色的蝴蝶结，性格开朗友善，喜欢交朋友。虽然她不是真正的猫，而是一个小女孩，但她可爱的外表和温暖的性格让她成为全世界喜爱的角色。",
+  "in_game": {
+    "role": "主角之一，引导玩家进入游戏世界",
+    "special_ability": "甜蜜奇迹 - 随机将5个元素变成草莓",
+    "unlock_at": "游戏开始即可获得"
+  },
+  "expressions": [
+    "normal",
+    "happy",
+    "excited",
+    "joy",
+    "thinking",
+    "surprised",
+    "determined",
+    "grateful",
+    "inviting",
+    "loving"
+  ],
+  "voice_actor": "暂无（Kitty不说话，只有声音效果）"
+}

@@ -1,0 +1,26 @@
+{
+  "id": 9,
+  "title": "甜品摆盘",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 28,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 4300,
+  "objectives": [
+    {
+      "type": "score",
+      "name": "分数",
+      "target": 4300
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_normal.mp3"
+}

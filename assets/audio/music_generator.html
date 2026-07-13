@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 三丽鸥梦幻消消乐 - AI音乐生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFF0F5 0%, #FFE4E1 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #FF69B4;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255,105,180,0.3);
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(255,105,180,0.2);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            color: #FF69B4;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .tools-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tools-section h2 {
+            color: #FF1493;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .tool-card {
+            border: 2px solid #FFB6C1;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .tool-card:hover {
+            background: #FFF0F5;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255,105,180,0.3);
+        }
+
+        .tool-card h3 {
+            color: #FF69B4;
+            margin-bottom: 8px;
+        }
+
+        .tool-card p {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .tool-card .badge {
+            display: inline-block;
+            background: #FF69B4;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            margin-top: 10px;
+        }
+
+        .music-list {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .music-list h2 {
+            color: #FF1493;
+            margin-bottom: 20px;
+        }
+
+        .chapter {
+            margin-bottom: 25px;
+        }
+
+        .chapter-title {
+            background: linear-gradient(90deg, #FFB6C1, #FF69B4);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .track-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            padding: 0 10px;
+        }
+
+        .track-card {
+            background: #FFF8FB;
+            border: 2px solid #FFE4E1;
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .track-card:hover {
+            border-color: #FF69B4;
+            box-shadow: 0 4px 12px rgba(255,105,180,0.2);
+        }
+
+        .track-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .track-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .track-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .track-meta span {
+            background: #FFF0F5;
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+
+        .prompt-box {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 10px;
+            max-height: 60px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prompt-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(transparent, #f5f5f5);
+        }
+
+        .track-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-copy {
+            background: #FFB6C1;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #FF69B4;
+        }
+
+        .btn-generate {
+            background: #FF1493;
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background: #C71585;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FFB6C1, #FF69B4, #FF1493);
+            width: 0%;
+            transition: width 0.3s;
+            z-index: 1001;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .stats { flex-direction: column; gap: 15px; }
+            .track-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="container">
+        <header>
+            <h1>🎀 三丽鸥梦幻消消乐</h1>
+            <p class="subtitle">AI音乐生成助手 | 30首BGM + 15个音效</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">30</div>
+                <div class="stat-label">背景音乐</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">15</div>
+                <div class="stat-label">游戏音效</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">6</div>
+                <div class="stat-label">主线章节</div>
+            </div>
+        </div>
+
+        <div class="tools-section">
+            <h2>🚀 推荐AI音乐工具</h2>
+            <div class="tool-grid">
+                <a href="https://suno.ai" target="_blank" class="tool-card">
+                    <h3>🎵 Suno AI</h3>
+                    <p>最适合游戏BGM，支持完整器乐生成</p>
+                    <span class="badge">推荐</span>
+                </a>
+                <a href="https://udio.com" target="_blank" class="tool-card">
+                    <h3>🎶 Udio</h3>
+                    <p>音质出色，支持长音乐生成</p>
+                    <span class="badge">高品质</span>
+                </a>
+                <a href="https://elevenlabs.io/sound-effects" target="_blank" class="tool-card">
+                    <h3>🔊 ElevenLabs</h3>
+                    <p>专为音效设计，消除音、UI音效</p>
+                    <span class="badge">音效专用</span>
+                </a>
+                <a href="https://freesound.org" target="_blank" class="tool-card">
+                    <h3>📚 Freesound</h3>
+                    <p>免费音效库，可AI二次创作</p>
+                    <span class="badge">免费</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="music-list">
+            <h2>🎼 音乐列表 - 点击复制提示词</h2>
+            <div id="musicContainer"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 音乐数据
+        const musicData = [
+            {
+                chapter: "🎀 序章 · 主菜单",
+                tracks: [
+                    { name: "欢迎来到三丽鸥世界", filename: "bgm_main_theme.mp3", key: "G major", tempo: "120 BPM", mood: "warm, dreamy", prompt: "Cute and dreamy opening theme for a Sanrio-themed mobile game, piano melody with gentle strings, magical fairy-tale atmosphere, warm and welcoming, G major, 120 BPM, Studio Ghibli-inspired, light bells, soft synth pads, heartwarming, instrumental only, no vocals" }
+                ]
+            },
+            {
+                chapter: "🍰 第一章 · Hello Kitty的甜品派对",
+                tracks: [
+                    { name: "甜品派对准备", filename: "bgm_chapter1_normal.mp3", key: "F major", tempo: "128 BPM", mood: "cheerful, sweet", prompt: "Upbeat and cheerful background music for a baking party scene, cute mobile game BGM, xylophone and glockenspiel melody, light electronic beat, pink and sweet atmosphere, F major, 128 BPM, playful and anticipation, Kawaii future bass elements, sugar rush feeling, instrumental" },
+                    { name: "寻找食材", filename: "bgm_chapter1_explore.mp3", key: "G major", tempo: "125 BPM", mood: "curious, playful", prompt: "Playful adventure music for searching ingredients, accordion and pizzicato strings, light-hearted exploration, European bakery vibes, quirky and curious, G major, 125 BPM, walking pace, warm acoustic feeling, gentle drums, instrumental" },
+                    { name: "派对布置", filename: "bgm_chapter1_warm.mp3", key: "C major", tempo: "118 BPM", mood: "warm, cozy", prompt: "Warm and cozy preparation music, string quartet with piano, collaborative and heartwarming, pastel colors atmosphere, C major, 118 BPM, flowing melody, orchestral but light, friendship theme, studio ghibli style orchestration, instrumental" },
+                    { name: "派对开始！", filename: "bgm_chapter1_boss.mp3", key: "D major", tempo: "132 BPM", mood: "triumphant, energetic", prompt: "Celebration climax music for party finale, full band arrangement, brass section with strings, triumphant and joyful, upbeat party atmosphere, confetti and balloons feeling, D major, 132 BPM, energetic and festive, carnival elements, bright and colorful, instrumental" }
+                ]
+            },
+            {
+                chapter: "🎵 第二章 · 美乐蒂的音乐盒",
+                tracks: [
+                    { name: "音乐盒的秘密", filename: "bgm_chapter2_musicbox.mp3", key: "A minor", tempo: "100 BPM", mood: "dreamy, ethereal", prompt: "Dreamy music box theme, celesta and glockenspiel, ethereal and magical, fairytale forest atmosphere, A minor, 100 BPM, delicate and fragile, sparkling sound effects, innocence and wonder, classical music box melody, instrumental" },
+                    { name: "寻找音符", filename: "bgm_chapter2_explore.mp3", key: "E minor", tempo: "115 BPM", mood: "curious, whimsical", prompt: "Exploration music with music box elements, searching for notes, pizzicato strings with soft electronic beat, whimsical and curious, magical journey, E minor, 115 BPM, gentle drive, sparkle effects, mystery but cute, instrumental" },
+                    { name: "旋律拼图", filename: "bgm_chapter2_warm.mp3", key: "C major", tempo: "108 BPM", mood: "heartwarming, rewarding", prompt: "Heartwarming puzzle completion music, building melody layers, strings and woodwinds, satisfying progression, healing atmosphere, warm sunset feeling, C major, 108 BPM, gentle and rewarding, emotional resolution, friends helping theme, instrumental" },
+                    { name: "音乐盒演奏", filename: "bgm_chapter2_boss.mp3", key: "F major", tempo: "120 BPM", mood: "grand, emotional", prompt: "Grand orchestral finale, My Melody theme variation, full string section with harp, emotional climax, magical concert atmosphere, dreams coming true, F major, 120 BPM, cinematic but cute, waltz rhythm, enchanted garden, instrumental" }
+                ]
+            },
+            {
+                chapter: "☁️ 第三章 · 大耳狗的云端冒险",
+                tracks: [
+                    { name: "云端漫步", filename: "bgm_chapter3_cloud.mp3", key: "A major", tempo: "90 BPM", mood: "peaceful, ethereal", prompt: "Ethereal cloud walking music, airy and floating sensation, synthesizer pads with wind chimes, peaceful and dreamy, soft pan flute, vast sky atmosphere, A major, 90 BPM, slow and relaxing, ambient nature sounds, cotton candy clouds, instrumental" },
+                    { name: "风之试炼", filename: "bgm_chapter3_wind.mp3", key: "D major", tempo: "118 BPM", mood: "adventurous, uplifting", prompt: "Wind adventure music, flowing and breezy, flute and strings, gentle movement, soaring feeling, open sky, D major, 118 BPM, forward momentum, nature elements, free and light, instrumental" },
+                    { name: "星空接近", filename: "bgm_chapter3_starry.mp3", key: "E minor", tempo: "100 BPM", mood: "wonderful, cosmic", prompt: "Dreamy starry sky approach, twinkling sound effects, celestial bells with soft bass, magical night atmosphere, gentle arpeggios, wonder and beauty, E minor, 100 BPM, floating in space, cosmic but cute, constellation theme, instrumental" },
+                    { name: "云端城堡", filename: "bgm_chapter3_boss.mp3", key: "C major", tempo: "125 BPM", mood: "majestic, heavenly", prompt: "Cloud kingdom finale, grand but gentle, piano and orchestra, Cinnamoroll theme, epic sky castle, fluffy and majestic, C major, 125 BPM, triumphant and soft, heavenly choir, cotton cloud orchestra, instrumental" }
+                ]
+            },
+            {
+                chapter: "🍮 第四章 · 布丁狗的悠闲午后",
+                tracks: [
+                    { name: "午后的阳光", filename: "bgm_chapter4_lazy.mp3", key: "F major", tempo: "85 BPM", mood: "relaxed, jazzy", prompt: "Lazy afternoon jazz, warm and cozy, double bass with soft brushes, relaxed vibe, sunny garden, coffee shop atmosphere, F major, 85 BPM, slow and comfortable, lo-fi hip hop elements, napping under tree, instrumental" },
+                    { name: "花园散步", filename: "bgm_chapter4_garden.mp3", key: "G major", tempo: "110 BPM", mood: "carefree, happy", prompt: "Garden stroll music, acoustic guitar and whistle, light and carefree, flower blooming, walking pace, nature sounds, G major, 110 BPM, casual and happy, bird chirping, gentle breeze, instrumental" },
+                    { name: "下午茶时光", filename: "bgm_chapter4_tea.mp3", key: "C major", tempo: "105 BPM", mood: "elegant, refined", prompt: "Tea party background music, elegant and cute, harpsichord with strings, Victorian but kawaii, pastry and tea, friends chatting, C major, 105 BPM, genteel and sweet, porcelain cups, macarons and cakes, instrumental" },
+                    { name: "完美的午后", filename: "bgm_chapter4_boss.mp3", key: "F major", tempo: "112 BPM", mood: "fulfilling, warm", prompt: "Perfect afternoon finale, satisfying conclusion, full acoustic band, Pompompurin theme, fulfillment and happiness, golden hour, F major, 112 BPM, warm and complete, contented sigh, best day ever, instrumental" }
+                ]
+            },
+            {
+                chapter: "🎭 第五章 · 库洛米的恶作剧",
+                tracks: [
+                    { name: "捣蛋计划", filename: "bgm_chapter5_mischief.mp3", key: "D minor", tempo: "130 BPM", mood: "mischievous, playful", prompt: "Mischievous prank music, playful and slightly naughty, clarinet and xylophone, cartoon villain vibes, but cute and funny, not scary, D minor, 130 BPM, sneaky but adorable, Kuromi theme, prankster energy, instrumental" },
+                    { name: "追逐游戏", filename: "bgm_chapter5_chase.mp3", key: "C minor", tempo: "140 BPM", mood: "energetic, exciting", prompt: "Cartoon chase music, fast and exciting, classic cartoon orchestration, Tom and Jerry style, but kawaii version, running and hiding, C minor, 140 BPM, energetic chase, comedic tension, slapstick elements, instrumental" },
+                    { name: "真相浮现", filename: "bgm_chapter5_truth.mp3", key: "A major", tempo: "95 BPM", mood: "emotional, touching", prompt: "Emotional revelation music, transformation from mischief to heart, piano solo building to strings, touching moment, character growth, friendship understanding, A major, 95 BPM, emotional and warm, tears of joy, misunderstood but kind, instrumental" },
+                    { name: "和解与友情", filename: "bgm_chapter5_boss.mp3", key: "D major", tempo: "120 BPM", mood: "heartfelt, triumphant", prompt: "Friendship reconciliation finale, emotional climax, orchestral emotional theme, redemption arc, friendship prevails, group hug feeling, D major, 120 BPM, heartfelt and moving, Kuromi joins the friends, happy ending, instrumental" }
+                ]
+            },
+            {
+                chapter: "⭐ 第六章 · 双子星的星空之旅",
+                tracks: [
+                    { name: "星空入口", filename: "bgm_chapter6_entrance.mp3", key: "E major", tempo: "100 BPM", mood: "cosmic, dreamy", prompt: "Dreamy starry entrance, cosmic but kawaii, synthesizer arpeggios with bells, vast space, Little Twin Stars theme, magical portal, E major, 100 BPM, floating in galaxy, shooting stars, nebula colors, instrumental" },
+                    { name: "银河漫步", filename: "bgm_chapter6_galaxy.mp3", key: "A major", tempo: "95 BPM", mood: "majestic, beautiful", prompt: "Galaxy walking music, weightless and beautiful, ambient electronic with orchestra, space wonder, shimmering sounds, aurora borealis, A major, 95 BPM, slow and majestic, starlight journey, cosmic beauty, instrumental" },
+                    { name: "星座连线", filename: "bgm_chapter6_constellation.mp3", key: "C major", tempo: "108 BPM", mood: "elegant, satisfying", prompt: "Constellation puzzle music, elegant and smart, connecting dots with sound, geometric beauty, harp and celesta, star patterns, C major, 108 BPM, satisfying connections, puzzle solving, light bulb moments, instrumental" },
+                    { name: "星光庆典", filename: "bgm_chapter6_final.mp3", key: "C major", tempo: "135 BPM", mood: "epic, celebratory", prompt: "Grand finale celebration, all characters together, full orchestral epic with choir, ultimate climax, fireworks and joy, graduation ceremony feeling, C major, 135 BPM, triumphant and emotional, all Sanrio friends, dream come true, best ending ever, instrumental" }
+                ]
+            },
+            {
+                chapter: "🎁 特别活动",
+                tracks: [
+                    { name: "三丽鸥圣诞派对", filename: "bgm_event_christmas.mp3", key: "F major", tempo: "120 BPM", mood: "festive, joyful", prompt: "Christmas Sanrio theme, jingle bells and cute elements, winter wonderland, snowflakes and decorations, classic Christmas melody with kawaii twist, F major, 120 BPM, festive and warm, Hello Kitty Christmas party, instrumental" },
+                    { name: "三丽鸥万圣节", filename: "bgm_event_halloween.mp3", key: "D minor", tempo: "115 BPM", mood: "playful, spooky", prompt: "Halloween Sanrio theme, spooky but cute, organ and theremin, trick or treat, not scary, just fun and costumes, D minor, 115 BPM, playful Halloween, Kuromi leading the fun, instrumental" },
+                    { name: "三丽鸥情人节", filename: "bgm_event_valentine.mp3", key: "F major", tempo: "100 BPM", mood: "romantic, sweet", prompt: "Valentine Sanrio theme, romantic and sweet, violin and piano, love letters and chocolates, pink hearts everywhere, confession scene, F major, 100 BPM, heartwarming romance, My Melody's love story, instrumental" }
+                ]
+            },
+            {
+                chapter: "🎬 通用场景",
+                tracks: [
+                    { name: "剧情对话BGM", filename: "bgm_story_scene.mp3", key: "C major", tempo: "80 BPM", mood: "gentle, calm", prompt: "Gentle story dialogue background music, emotional and supportive, soft piano with strings, character conversation atmosphere, heartwarming and gentle, C major, 80 BPM, calm and peaceful, story telling music, instrumental" },
+                    { name: "关卡完成庆祝", filename: "bgm_victory.mp3", key: "C major", tempo: "130 BPM", mood: "triumphant, happy", prompt: "Victory celebration jingle, triumphant and happy, bright brass with chimes, level complete feeling, satisfying reward sound, C major, 130 BPM, short and impactful, game victory music, instrumental" }
+                ]
+            }
+        ];
+
+        // 音效数据
+        const sfxData = [
+            { name: "消除音效(3连)", filename: "sfx_match_1.mp3", prompt: "Cute pop sound, bubble burst, satisfying mobile game match sound, high pitch ding, magical sparkle, short and sweet, kawaii game effect" },
+            { name: "消除音效(4连)", filename: "sfx_match_2.mp3", prompt: "Magical chime, ascending scale, sparkle sound, more satisfying than simple pop, fairy dust magic, mobile game power match, cute and impressive" },
+            { name: "消除音效(5连)", filename: "sfx_match_3.mp3", prompt: "Epic magical explosion, triumphant chime, rainbow sparkle sound, special achievement, combo celebration, spectacular game effect, cascading joy" },
+            { name: "特殊元素激活", filename: "sfx_special_match.mp3", prompt: "Power-up activation, electric spark, whoosh and zap, special ability ready, magical transformation, energy charge, super power sound" },
+            { name: "按钮点击", filename: "sfx_click.mp3", prompt: "Cute button click, soft pop, UI selection sound, kawaii interface feedback, gentle tap, mobile game menu click" },
+            { name: "关卡完成", filename: "sfx_level_complete.mp3", prompt: "Victory fanfare, level complete celebration, triumphant music jingle, achievement unlocked, stars appearing sound, happy and rewarding, mobile game win" },
+            { name: "关卡失败", filename: "sfx_level_fail.mp3", prompt: "Soft defeat sound, gentle failure jingle, try again encouragement, not scary, cute game over, hopeful retry, uplifting failure" },
+            { name: "获得星星", filename: "sfx_star_get.mp3", prompt: "Star collection sound, sparkling chime, achievement ping, magical star appear, twinkle and shine, reward acquisition" }
+        ];
+
+        // 渲染音乐列表
+        function renderMusicList() {
+            const container = document.getElementById('musicContainer');
+            let html = '';
+
+            musicData.forEach((chapter, index) => {
+                html += `
+                    <div class="chapter">
+                        <div class="chapter-title">${chapter.chapter}</div>
+                        <div class="track-grid">
+                            ${chapter.tracks.map((track, trackIndex) => `
+                                <div class="track-card">
+                                    <div class="track-header">
+                                        <span class="track-name">${track.name}</span>
+                                    </div>
+                                    <div class="track-meta">
+                                        <span>🎵 ${track.key}</span>
+                                        <span>⏱️ ${track.tempo}</span>
+                                        <span>💫 ${track.mood}</span>
+                                    </div>
+                                    <div class="prompt-box">${track.prompt}</div>
+                                    <div class="track-actions">
+                                        <button class="btn btn-copy" onclick="copyPrompt('${track.prompt.replace(/'/g, "\\'")}')">
+                                            📋 复制
+                                        </button>
+                                        <button class="btn btn-generate" onclick="openSuno('${encodeURIComponent(track.prompt)}')">
+                                            🎵 生成
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 添加音效部分
+            html += `
+                <div class="chapter">
+                    <div class="chapter-title">🔊 游戏音效 (使用 ElevenLabs)</div>
+                    <div class="track-grid">
+                        ${sfxData.map(sfx => `
+                            <div class="track-card">
+                                <div class="track-header">
+                                    <span class="track-name">${sfx.name}</span>
+                                </div>
+                                <div class="track-meta">
+                                    <span>📁 ${sfx.filename}</span>
+                                </div>
+                                <div class="prompt-box">${sfx.prompt}</div>
+                                <div class="track-actions">
+                                    <button class="btn btn-copy" onclick="copyPrompt('${sfx.prompt.replace(/'/g, "\\'")}')">
+                                        📋 复制
+                                    </button>
+                                    <button class="btn btn-generate" onclick="openElevenLabs()">
+                                        🔊 生成
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // 复制提示词
+        function copyPrompt(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ 提示词已复制到剪贴板');
+            }).catch(err => {
+                // 降级方案
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ 提示词已复制到剪贴板');
+            });
+        }
+
+        // 打开Suno AI
+        function openSuno(prompt) {
+            const url = `https://suno.ai`;
+            window.open(url, '_blank');
+            showToast('🎵 请在 Suno AI 中选择 "Custom Mode" 并粘贴提示词');
+        }
+
+        // 打开ElevenLabs
+        function openElevenLabs() {
+            window.open('https://elevenlabs.io/sound-effects', '_blank');
+            showToast('🔊 请在 ElevenLabs 中粘贴音效提示词');
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 页面加载完成后渲染
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMusicList();
+
+            // 模拟进度条
+            const progressBar = document.getElementById('progressBar');
+            setTimeout(() => { progressBar.style.width = '100%'; }, 100);
+            setTimeout(() => { progressBar.style.opacity = '0'; }, 500);
+        });
+    </script>
+</body>
+</html>

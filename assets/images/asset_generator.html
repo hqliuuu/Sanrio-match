@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 三丽鸥消消乐 - 规范AI素材生成器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+        .style-guide {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .style-guide h2 {
+            color: #FF1493;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .rule-box {
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .rule-must {
+            background: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .rule-ban {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+
+        .rule-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .rule-box ul {
+            list-style: none;
+            line-height: 2;
+        }
+
+        .rule-must li:before {
+            content: "✓ ";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .rule-ban li:before {
+            content: "✗ ";
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid white;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: white;
+            color: #FF69B4;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            background: rgba(255,255,255,0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-title {
+            font-size: 1.5em;
+            color: #FF1493;
+            font-weight: bold;
+        }
+
+        .priority-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .p0 { background: #f44336; }
+        .p1 { background: #FF69B4; }
+        .p2 { background: #FFB6C1; color: #333; }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .asset-card.p0 { border-left-color: #f44336; }
+        .asset-card.p1 { border-left-color: #FF69B4; }
+        .asset-card.p2 { border-left-color: #FFB6C1; }
+
+        .asset-filename {
+            background: #333;
+            color: #4CAF50;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .asset-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .asset-info {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-tag {
+            background: #f5f5f5;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .prompt-section {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .prompt-label {
+            font-size: 0.8em;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .tool-selector {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tool-btn {
+            padding: 4px 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.2s;
+        }
+
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .prompt-text {
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.7;
+            max-height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prompt-text.expanded {
+            max-height: none;
+        }
+
+        .expand-btn {
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .asset-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+        }
+
+        .checklist {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .checklist h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+            font-size: 0.85em;
+            color: #856404;
+        }
+
+        .checklist-item input {
+            cursor: pointer;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .fab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1001;
+            font-weight: bold;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .rules-grid { grid-template-columns: 1fr; }
+            .assets-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎀 三丽鸥梦幻消消乐</h1>
+            <p style="color: white; font-size: 1.2em;">规范AI素材生成器 | 2D可爱风格 | 角色设定一致</p>
+        </header>
+
+        <div class="style-guide">
+            <h2>📋 项目风格规范</h2>
+            <div class="rules-grid">
+                <div class="rule-box rule-must">
+                    <h3>✅ 必须遵守</h3>
+                    <ul>
+                        <li>2D手绘插画风格</li>
+                        <li>扁平化设计（Flat Design）</li>
+                        <li>柔和pastel色调</li>
+                        <li>matte质感，无光线渲染</li>
+                        <li>圆润线条，无尖锐边角</li>
+                        <li>Kitty绝对不能有嘴巴</li>
+                        <li>食材不能拟人化（无表情）</li>
+                        <li>保持角色官方设定一致性</li>
+                    </ul>
+                </div>
+                <div class="rule-box rule-ban">
+                    <h3>❌ 严格禁止</h3>
+                    <ul>
+                        <li>3D渲染/光线追踪</li>
+                        <li>玻璃/金属反光材质</li>
+                        <li>写实风格/照片级</li>
+                        <li>角色设定混合（如Kitty有嘴）</li>
+                        <li>食材拟人化（有脸有表情）</li>
+                        <li>暗黑色调/恐怖元素</li>
+                        <li>复杂光影效果</li>
+                        <li>镜面/透明折射效果</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterAssets('all')">全部</button>
+            <button class="filter-btn" onclick="filterAssets('p0')">🔴 P0 必须</button>
+            <button class="filter-btn" onclick="filterAssets('p1')">🟠 P1 重要</button>
+            <button class="filter-btn" onclick="filterAssets('pieces')">🍬 消除元素</button>
+            <button class="filter-btn" onclick="filterAssets('characters')">👑 角色立绘</button>
+            <button class="filter-btn" onclick="filterAssets('backgrounds')">🖼️ 背景</button>
+            <button class="filter-btn" onclick="filterAssets('ui')">🎯 UI</button>
+        </div>
+
+        <div id="assetsContainer"></div>
+    </div>
+
+    <button class="fab" onclick="copyAllPrompts()">📋 复制全部提示词</button>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 完整的素材数据库
+        const assetsDB = {
+            pieces: [
+                {
+                    id: 'piece_01',
+                    filename: 'piece_strawberry.png',
+                    title: '🍓 草莓消除元素',
+                    priority: 'p0',
+                    chapter: '第1关-收集草莓',
+                    specs: ['100x100px', 'PNG透明底', '红色元素'],
+                    bing: '2D cute strawberry game piece icon, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, soft pastel red color, matte texture, rounded plump shape with small green leaves on top, simple facial features (only dot eyes if any), NO MOUTH on fruit, not anthropomorphic, pure fruit item, no lighting effects, no glass material, flat design, white background, game asset, simple and clean',
+                    notes: '水果不能有表情！不能有嘴巴！'
+                },
+                {
+                    id: 'piece_02',
+                    filename: 'piece_lemon.png',
+                    title: '🍋 柠檬消除元素',
+                    priority: 'p0',
+                    chapter: '基础元素',
+                    specs: ['100x100px', 'PNG透明底', '黄色元素'],
+                    bing: '2D cute lemon game piece icon, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, soft pastel yellow color, matte texture, oval rounded shape, small leaf on top, NO FACE, not anthropomorphic, pure fruit item, no lighting effects, no glass material, flat design, white background, game asset'
+                },
+                {
+                    id: 'piece_03',
+                    filename: 'piece_grape.png',
+                    title: '🍇 葡萄消除元素',
+                    priority: 'p0',
+                    chapter: '基础元素',
+                    specs: ['100x100px', 'PNG透明底', '紫色元素'],
+                    bing: '2D cute grape cluster game piece icon, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, soft pastel purple color, matte texture, three round berries connected together, simple leaf decoration, NO FACE, not anthropomorphic, pure fruit item, no lighting effects, no glass material, flat design, white background, game asset'
+                },
+                {
+                    id: 'piece_04',
+                    filename: 'piece_apple.png',
+                    title: '🍏 苹果消除元素',
+                    priority: 'p0',
+                    chapter: '基础元素',
+                    specs: ['100x100px', 'PNG透明底', '绿色元素'],
+                    bing: '2D cute green apple game piece icon, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, soft pastel green color, matte texture, round shape with small brown stem and leaf, NO FACE, not anthropomorphic, pure fruit item, no lighting effects, no glass material, flat design, white background, game asset'
+                },
+                {
+                    id: 'piece_05',
+                    filename: 'piece_blueberry.png',
+                    title: '🫐 蓝莓消除元素',
+                    priority: 'p0',
+                    chapter: '基础元素',
+                    specs: ['100x100px', 'PNG透明底', '蓝色元素'],
+                    bing: '2D cute blueberry game piece icon, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, soft pastel blue color, matte texture, small round berry shape, NO FACE, not anthropomorphic, pure fruit item, no lighting effects, no glass material, flat design, white background, game asset'
+                },
+                {
+                    id: 'piece_06',
+                    filename: 'piece_orange.png',
+                    title: '🍊 橘子消除元素',
+                    priority: 'p0',
+                    chapter: '基础元素',
+                    specs: ['100x100px', 'PNG透明底', '橙色元素'],
+                    bing: '2D cute orange game piece icon, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, soft pastel orange color, matte texture, round shape with small green leaf, NO FACE, not anthropomorphic, pure fruit item, no lighting effects, no glass material, flat design, white background, game asset'
+                },
+                {
+                    id: 'piece_special_01',
+                    filename: 'piece_striped_h.png',
+                    title: '⭐ 横向条纹糖果',
+                    priority: 'p0',
+                    chapter: '特殊元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: '2D cute wrapped candy game piece with horizontal rainbow stripes, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, soft pastel colors (pink, yellow, blue, green stripes), matte texture, rectangular wrapped shape with twisted ends, sparkle decoration effects, NO FACE, no lighting effects, no glass material, flat design, white background, game asset'
+                },
+                {
+                    id: 'piece_special_02',
+                    filename: 'piece_color_bomb.png',
+                    title: '🌈 彩虹炸弹',
+                    priority: 'p0',
+                    chapter: '特殊元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: '2D cute rainbow sphere game piece, hand-drawn illustration style, Sanrio-inspired kawaii aesthetic, rainbow colored stripes (red, orange, yellow, green, blue, purple), matte texture, round ball shape with small stars around, NO FACE, no lighting effects, no glass material, flat design, white background, game asset, special power-up'
+                }
+            ],
+            characters: [
+                {
+                    id: 'char_kitty_01',
+                    filename: 'hello_kitty_portrait_normal.png',
+                    title: '👑 Hello Kitty 基础头像',
+                    priority: 'p0',
+                    chapter: '主角-所有关卡',
+                    specs: ['256x256px', 'PNG透明底', '对话用'],
+                    bing: 'Hello Kitty character portrait, official Sanrio design, 2D hand-drawn illustration style, white cat with oval face, NO MOUTH (absolutely no mouth), black oval eyes, yellow nose, whiskers on cheeks, iconic RED BOW on left ear, soft pastel color palette, matte texture, no lighting effects, simple clean lines, rounded shapes, character avatar, white background, cute and friendly expression',
+                    notes: '【重要】Kitty绝对不能有嘴巴！这是核心设定！'
+                },
+                {
+                    id: 'char_kitty_02',
+                    filename: 'hello_kitty_portrait_happy.png',
+                    title: '😊 Hello Kitty 开心表情',
+                    priority: 'p0',
+                    chapter: '第一章',
+                    specs: ['256x256px', 'PNG透明底'],
+                    bing: 'Hello Kitty character portrait, happy expression with sparkling eyes, official Sanrio design, 2D hand-drawn illustration style, white cat with oval face, NO MOUTH, black oval eyes with shine marks, yellow nose, whiskers, RED BOW on left ear, soft pink pastel background, matte texture, no lighting effects, simple clean lines, character avatar'
+                },
+                {
+                    id: 'char_kitty_03',
+                    filename: 'hello_kitty_fullbody_party.png',
+                    title: '🎀 Hello Kitty 派对服装',
+                    priority: 'p1',
+                    chapter: '第一章-甜品派对',
+                    specs: ['512x768px', '全身立绘'],
+                    bing: 'Hello Kitty full body illustration, wearing pink pastry chef outfit, white apron with strawberry pattern, chef hat with red bow, holding a cake, official Sanrio design, 2D hand-drawn style, white cat with NO MOUTH, black oval eyes, yellow nose, RED BOW on left ear, standing pose, bakery background with pastel colors, matte texture, no lighting effects, no glass material, simple clean lines, rounded shapes, cute and cheerful'
+                },
+                {
+                    id: 'char_melody_01',
+                    filename: 'my_melody_portrait_normal.png',
+                    title: '🐰 My Melody 基础头像',
+                    priority: 'p0',
+                    chapter: '第二章-音乐盒',
+                    specs: ['256x256px', 'PNG透明底'],
+                    bing: 'My Melody character portrait, official Sanrio design, 2D hand-drawn illustration style, white rabbit with pink hood covering head, long floppy ears with pink exterior, white face with oval black eyes, yellow nose, pink hood with white bow decoration, NO MOUTH, gentle and sweet expression, soft pastel pink background, matte texture, no lighting effects, simple clean lines, character avatar'
+                },
+                {
+                    id: 'char_cinnamon_01',
+                    filename: 'cinnamonroll_portrait_normal.png',
+                    title: '☁️ Cinnamoroll 基础头像',
+                    priority: 'p1',
+                    chapter: '第三章-云端',
+                    specs: ['256x256px', 'PNG透明底'],
+                    bing: 'Cinnamoroll character portrait, official Sanrio design, 2D hand-drawn illustration style, white puppy with long floppy ears like cinnamon rolls, big blue eyes, small pink mouth, blush marks on cheeks, tiny body, curled tail, soft cloud background in light blue, matte texture, no lighting effects, simple clean lines, character avatar, cute and sleepy expression'
+                }
+            ],
+            backgrounds: [
+                {
+                    id: 'bg_01',
+                    filename: 'bg_main_menu.png',
+                    title: '🏠 主菜单背景',
+                    priority: 'p0',
+                    chapter: '主菜单',
+                    specs: ['1080x1920px', '竖屏', 'JPG'],
+                    bing: '2D cute game main menu background, hand-drawn illustration style, Sanrio-inspired dreamland, Hello Kitty house in distance, rolling hills with pastel pink and lavender colors, soft fluffy clouds, rainbow arch, candy trees and flowers, butterflies and small birds, heart-shaped bushes, matte texture, no lighting effects, flat design, rounded shapes everywhere, warm and welcoming atmosphere, cozy and cheerful, vertical composition 9:16, mobile game background'
+                },
+                {
+                    id: 'bg_02',
+                    filename: 'bg_chapter1.png',
+                    title: '🍰 第一章背景-甜品派对',
+                    priority: 'p0',
+                    chapter: '第1-10关',
+                    specs: ['1080x1920px', '竖屏'],
+                    bing: '2D cute bakery kitchen background, hand-drawn illustration style, Sanrio-inspired sweets shop, Hello Kitty bakery interior, pink and white walls with heart patterns, wooden shelves with cakes and pastries, mixing bowls and baking tools, flour bags with cute patterns, oven with window showing baking cookies, pastel color palette, pink and cream and light brown, matte texture, no lighting effects, flat design, rounded furniture, cozy warm atmosphere, vertical composition 9:16, mobile game background'
+                }
+            ],
+            ui: [
+                {
+                    id: 'ui_01',
+                    filename: 'btn_start.png',
+                    title: '▶️ 开始按钮',
+                    priority: 'p0',
+                    chapter: '通用UI',
+                    specs: ['400x120px', 'PNG透明底'],
+                    bing: '2D cute game button "START", hand-drawn illustration style, Sanrio-inspired design, rounded rectangle shape with scalloped edges, pink gradient (light pink to darker pink), white text "START" in rounded font, small heart decorations on corners, ribbon bow on top, matte texture, no lighting effects, flat design, cute and inviting, white background, game UI element'
+                },
+                {
+                    id: 'ui_02',
+                    filename: 'icon_star.png',
+                    title: '⭐ 星星图标',
+                    priority: 'p0',
+                    chapter: '通用UI',
+                    specs: ['64x64px', 'PNG透明底'],
+                    bing: '2D cute star icon, hand-drawn illustration style, Sanrio-inspired design, five-pointed star with rounded tips, yellow color with small pink heart in center, sparkle effects around, matte texture, no lighting effects, flat design, game UI icon, white background'
+                }
+            ]
+        };
+
+        let currentFilter = 'all';
+        let currentTool = 'bing';
+
+        function filterAssets(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderAssets();
+        }
+
+        function switchTool(assetId, tool) {
+            currentTool = tool;
+            renderAssets();
+        }
+
+        function getPrompt(asset) {
+            return asset[currentTool] || asset.bing;
+        }
+
+        function renderAssets() {
+            const container = document.getElementById('assetsContainer');
+            let html = '';
+
+            for (const [category, assets] of Object.entries(assetsDB)) {
+                let filteredAssets = assets;
+
+                if (currentFilter !== 'all') {
+                    if (currentFilter.startsWith('p')) {
+                        filteredAssets = assets.filter(a => a.priority === currentFilter);
+                    } else {
+                        filteredAssets = assets.filter(a => a.category === currentFilter ||
+                            (category === currentFilter));
+                    }
+                }
+
+                if (filteredAssets.length === 0) continue;
+
+                const categoryNames = {
+                    pieces: '🍬 消除元素',
+                    characters: '👑 角色立绘',
+                    backgrounds: '🖼️ 背景图',
+                    ui: '🎯 UI元素'
+                };
+
+                const priorityLabels = {
+                    p0: 'P0 必须',
+                    p1: 'P1 重要',
+                    p2: 'P2 可选'
+                };
+
+                html += `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <div class="category-title">${categoryNames[category]}</div>
+                            <span class="priority-badge ${filteredAssets[0].priority}">${priorityLabels[filteredAssets[0].priority]}</span>
+                        </div>
+                        <div class="assets-grid">
+                `;
+
+                filteredAssets.forEach(asset => {
+                    const prompt = getPrompt(asset);
+                    const safePrompt = prompt.replace(/"/g, '&quot;');
+
+                    html += `
+                        <div class="asset-card ${asset.priority}">
+                            <span class="asset-filename">${asset.filename}</span>
+                            <div class="asset-title">${asset.title}</div>
+                            <div class="asset-info">
+                                ${asset.specs.map(spec => `<span class="info-tag">${spec}</span>`).join('')}
+                                <span class="info-tag">${asset.chapter}</span>
+                            </div>
+                            <div class="prompt-section">
+                                <div class="prompt-header">
+                                    <span class="prompt-label">📋 提示词 (${currentTool.toUpperCase()})</span>
+                                    <div class="tool-selector">
+                                        <button class="tool-btn ${currentTool === 'bing' ? 'active' : ''}" onclick="currentTool='bing'; renderAssets();">Bing</button>
+                                    </div>
+                                </div>
+                                <div class="prompt-text" id="prompt-${asset.id}">${prompt}</div>
+                            </div>
+                            <div class="asset-actions">
+                                <button class="btn btn-copy" onclick="copyPrompt('${safePrompt}', '${asset.filename}')">
+                                    📋 复制提示词
+                                </button>
+                                <button class="btn btn-generate" onclick="openBing()">
+                                    🎨 去生成
+                                </button>
+                            </div>
+                            ${asset.notes ? `
+                            <div style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:8px;color:#856404;font-size:0.85em;">
+                                ⚠️ ${asset.notes}
+                            </div>
+                            ` : ''}
+                            <div class="checklist">
+                                <h4>✓ 质量检查清单</h4>
+                                <label class="checklist-item"><input type="checkbox"> 2D手绘风格</label>
+                                <label class="checklist-item"><input type="checkbox"> 无3D渲染/光线</label>
+                                <label class="checklist-item"><input type="checkbox"> 无玻璃材质</label>
+                                <label class="checklist-item"><input type="checkbox"> ${asset.category === 'characters' ? 'Kitty无嘴巴' : '物品无拟人'}</label>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function copyPrompt(prompt, filename) {
+            navigator.clipboard.writeText(prompt).then(() => {
+                showToast(`✅ ${filename} 提示词已复制！`);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = prompt;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ 提示词已复制！');
+            });
+        }
+
+        function copyAllPrompts() {
+            let allPrompts = `🎨 三丽鸥消消乐 - AI素材生成提示词大全\n`;
+            allPrompts += '══════════════════════════════════════════════════\n\n';
+            allPrompts += '📋 项目规范:\n';
+            allPrompts += '- 2D手绘风格，扁平化设计\n';
+            allPrompts += '- 无3D渲染，无光线效果\n';
+            allPrompts += '- 无玻璃材质，无反光\n';
+            allPrompts += '- Kitty绝对不能有嘴巴\n';
+            allPrompts += '- 食材/物品不能拟人化\n\n';
+
+            for (const [category, assets] of Object.entries(assetsDB)) {
+                allPrompts += `【${category}】\n`;
+                assets.forEach((asset, i) => {
+                    allPrompts += `\n${i+1}. ${asset.filename}\n`;
+                    allPrompts += `标题: ${asset.title}\n`;
+                    allPrompts += `优先级: ${asset.priority.toUpperCase()}\n`;
+                    allPrompts += `${getPrompt(asset)}\n`;
+                    if (asset.notes) {
+                        allPrompts += `注意: ${asset.notes}\n`;
+                    }
+                    allPrompts += '\n';
+                });
+            }
+
+            navigator.clipboard.writeText(allPrompts).then(() => {
+                showToast('✅ 全部提示词已复制到剪贴板！');
+            });
+        }
+
+        function openBing() {
+            window.open('https://www.bing.com/create', '_blank');
+            showToast('🎨 请在Bing Image Creator中粘贴提示词生成');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 初始化
+        renderAssets();
+    </script>
+</body>
+</html>

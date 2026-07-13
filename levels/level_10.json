@@ -1,0 +1,39 @@
+{
+  "id": 10,
+  "title": "派对开始！",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 30,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 5000,
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 1,
+      "name": "草莓",
+      "target": 20
+    },
+    {
+      "type": "collect",
+      "pieceType": 3,
+      "name": "巧克力",
+      "target": 15
+    },
+    {
+      "type": "collect",
+      "pieceType": 2,
+      "name": "奶油",
+      "target": 10
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_boss.mp3"
+}

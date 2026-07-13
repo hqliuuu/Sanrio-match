@@ -1,0 +1,156 @@
+{
+  "level_id": 10,
+  "chapter_id": 1,
+  "title": "派对开始！",
+  "is_boss_level": true,
+  "pre_dialogue": [
+    {
+      "character": "hello_kitty",
+      "expression": "excited",
+      "position": "center",
+      "text": "终于！所有的食材都准备好了！",
+      "voice": "kitty_ready_01.mp3",
+      "animation": "jump"
+    },
+    {
+      "character": "my_melody",
+      "expression": "happy",
+      "position": "left",
+      "text": "Kitty！装饰也都布置好了哦！",
+      "voice": "melody_report_01.mp3",
+      "animation": "wave"
+    },
+    {
+      "character": "cinnamonroll",
+      "expression": "sleepy",
+      "position": "right",
+      "text": "呼...食材全都运送完毕了...",
+      "voice": "cinnamoroll_tired_01.mp3",
+      "animation": "stretch"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "joy",
+      "position": "center",
+      "text": "谢谢大家！派对可以开始啦！",
+      "voice": "kitty_party_01.mp3",
+      "animation": "spin"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "happy",
+      "position": "center",
+      "text": "最后一个任务——制作派对蛋糕！",
+      "voice": "kitty_final_01.mp3",
+      "animation": "point"
+    },
+    {
+      "character": "all",
+      "expression": "excited",
+      "position": "all",
+      "text": "一起加油吧！",
+      "voice": "group_cheer_01.mp3",
+      "animation": "cheer"
+    }
+  ],
+  "mid_level_event": {
+    "trigger_at_move": 15,
+    "dialogue": [
+      {
+        "character": "hello_kitty",
+        "expression": "surprised",
+        "position": "center",
+        "text": "哇！蛋糕开始变得好漂亮！",
+        "voice": "kitty_mid_01.mp3",
+        "animation": "sparkle"
+      }
+    ],
+    "effect": "cake_glow"
+  },
+  "post_dialogue": [
+    {
+      "character": "hello_kitty",
+      "expression": "joy",
+      "position": "center",
+      "text": "完成了！史上最漂亮的派对蛋糕！",
+      "voice": "kitty_complete_01.mp3",
+      "animation": "spin"
+    },
+    {
+      "character": "my_melody",
+      "expression": "loving",
+      "position": "left",
+      "text": "Kitty好厉害！",
+      "voice": "melody_praise_01.mp3",
+      "animation": "clap"
+    },
+    {
+      "character": "cinnamonroll",
+      "expression": "happy",
+      "position": "right",
+      "text": "蛋糕看起来好好吃...",
+      "voice": "cinnamoroll_hungry_01.mp3",
+      "animation": "drool"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "grateful",
+      "position": "center",
+      "text": "谢谢你帮我完成这一切！",
+      "voice": "kitty_grateful_01.mp3",
+      "animation": "bow"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "inviting",
+      "position": "center",
+      "text": "来参加我们的派对吧！",
+      "voice": "kitty_invite_01.mp3",
+      "animation": "wave"
+    },
+    {
+      "character": "narrator",
+      "expression": null,
+      "position": "center",
+      "text": "第一章 完",
+      "voice": null,
+      "animation": "chapter_end"
+    }
+  ],
+  "objective": {
+    "type": "multi",
+    "targets": [
+      {
+        "type": "collect",
+        "target": "strawberry",
+        "count": 20
+      },
+      {
+        "type": "collect",
+        "target": "chocolate",
+        "count": 15
+      },
+      {
+        "type": "collect",
+        "target": "cream",
+        "count": 10
+      }
+    ],
+    "description": "收集制作蛋糕的所有材料",
+    "hint": "合理使用特殊道具可以更快完成目标！"
+  },
+  "difficulty": "hard",
+  "moves_limit": 30,
+  "stars_requirement": {
+    "1_star": 5000,
+    "2_stars": 10000,
+    "3_stars": 15000
+  },
+  "rewards": {
+    "first_clear": {
+      "coins": 100,
+      "stars": 3,
+      "unlock": "chapter_2"
+    }
+  }
+}

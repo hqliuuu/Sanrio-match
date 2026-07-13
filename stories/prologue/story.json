@@ -1,0 +1,9 @@
+{
+  "chapter_id": 0,
+  "title": "欢迎来到三丽鸥世界",
+  "description": "一场神奇的冒险即将开始...",
+  "unlock_condition": "新玩家首次进入游戏",
+  "is_tutorial": true,
+  "bgm": "main_theme.mp3",
+  "background": "dream_land_bg.png"
+}

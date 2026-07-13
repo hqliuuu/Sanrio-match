@@ -1,0 +1,27 @@
+{
+  "id": 6,
+  "title": "烤箱预热",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 25,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 3000,
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 5,
+      "name": "蓝莓",
+      "target": 18
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_normal.mp3"
+}

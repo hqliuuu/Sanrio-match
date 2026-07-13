@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🆓 三丽鸥消消乐 - 免费AI素材生成器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        h1 { font-size: 2.8em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+        .free-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tool-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .tool-card:hover, .tool-card.active {
+            transform: translateY(-5px);
+            border-color: #4CAF50;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .tool-card.active {
+            background: #e8f5e9;
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+
+        .bing-icon { background: linear-gradient(135deg, #008373, #00a4a4); }
+        .leonardo-icon { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .playground-icon { background: linear-gradient(135deg, #f97316, #fb923c); }
+        .tensor-icon { background: linear-gradient(135deg, #ec4899, #f472b6); }
+        .sd-icon { background: linear-gradient(135deg, #22c55e, #4ade80); }
+
+        .tool-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .tool-features li {
+            padding: 5px 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .tool-features li:before {
+            content: "✓ ";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .assets-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+
+        .category-title {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .asset-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .asset-filename {
+            background: #333;
+            color: #4CAF50;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .asset-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .asset-specs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .spec-tag {
+            background: white;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .prompt-box {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .prompt-label {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .prompt-text {
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.6;
+            max-height: 100px;
+            overflow: hidden;
+        }
+
+        .asset-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .batch-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .fab {
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .fab-primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .fab-secondary {
+            background: white;
+            color: #667eea;
+        }
+
+        .fab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1001;
+            font-weight: bold;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .quick-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .quick-link:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .assets-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎀 三丽鸥梦幻消消乐</h1>
+            <div class="free-badge">✨ 完全免费 AI 素材生成方案 ✨</div>
+            <p style="color: white; margin-top: 15px; opacity: 0.9;">无需订阅 | 无需付费 | 即开即用</p>
+
+            <div class="quick-links">
+                <a href="https://www.bing.com/create" target="_blank" class="quick-link">🎨 Bing Image Creator</a>
+                <a href="https://leonardo.ai" target="_blank" class="quick-link">🖼️ Leonardo.AI</a>
+                <a href="https://playgroundai.com" target="_blank" class="quick-link">✨ Playground AI</a>
+                <a href="https://tensor.art" target="_blank" class="quick-link">🎯 Tensor.Art</a>
+            </div>
+        </header>
+
+        <div class="tools-grid">
+            <div class="tool-card active" onclick="selectTool('bing')">
+                <div class="tool-header">
+                    <div class="tool-icon bing-icon">🎨</div>
+                    <div>
+                        <div class="tool-name">Bing Image Creator</div>
+                        <span class="tool-badge">🏆 最推荐</span>
+                    </div>
+                </div>
+                <ul class="tool-features">
+                    <li>基于 DALL-E 3，质量超高</li>
+                    <li>完全免费，无限生成</li>
+                    <li>支持中文提示词</li>
+                    <li>无水印，可商用</li>
+                    <li>需要微软账号</li>
+                </ul>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('leonardo')">
+                <div class="tool-header">
+                    <div class="tool-icon leonardo-icon">🖼️</div>
+                    <div>
+                        <div class="tool-name">Leonardo.AI</div>
+                        <span class="tool-badge">⚡ 每天刷新</span>
+                    </div>
+                </div>
+                <ul class="tool-features">
+                    <li>每天150 tokens免费</li>
+                    <li>多种动漫模型可选</li>
+                    <li>可放大到高清</li>
+                    <li>Game Assets专用模式</li>
+                    <li>无水印</li>
+                </ul>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('playground')">
+                <div class="tool-header">
+                    <div class="tool-icon playground-icon">✨</div>
+                    <div>
+                        <div class="tool-name">Playground AI</div>
+                        <span class="tool-badge">📊 500张/天</span>
+                    </div>
+                </div>
+                <ul class="tool-features">
+                    <li>每天500张免费额度</li>
+                    <li>Stable Diffusion模型</li>
+                    <li>在线编辑功能</li>
+                    <li>免费版有水印</li>
+                    <li>适合批量生成</li>
+                </ul>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('tensor')">
+                <div class="tool-header">
+                    <div class="tool-icon tensor-icon">🎯</div>
+                    <div>
+                        <div class="tool-name">Tensor.Art</div>
+                        <span class="tool-badge">🎭 LoRA支持</span>
+                    </div>
+                </div>
+                <ul class="tool-features">
+                    <li>每天100积分免费</li>
+                    <li>大量免费模型</li>
+                    <li>支持Sanrio LoRA</li>
+                    <li>社区分享模型</li>
+                    <li>中文界面</li>
+                </ul>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('sd')">
+                <div class="tool-header">
+                    <div class="tool-icon sd-icon">💻</div>
+                    <div>
+                        <div class="tool-name">Stable Diffusion 本地</div>
+                        <span class="tool-badge">∞ 无限生成</span>
+                    </div>
+                </div>
+                <ul class="tool-features">
+                    <li>完全免费，零成本</li>
+                    <li>无限生成，无限制</li>
+                    <li>可训练专属模型</li>
+                    <li>需要NVIDIA显卡</li>
+                    <li>秋叶整合包一键安装</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="assets-container">
+            <div id="assetsList"></div>
+        </div>
+    </div>
+
+    <div class="batch-actions">
+        <button class="fab fab-secondary" onclick="copyAllPrompts()">📋 复制全部</button>
+        <button class="fab fab-primary" onclick="openSelectedTool()">🚀 打开工具</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentTool = 'bing';
+
+        const assetsData = {
+            pieces: [
+                {
+                    filename: 'piece_strawberry.png',
+                    title: '🍓 草莓消除元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: 'A cute kawaii strawberry game piece icon, Sanrio style, round and plump, shiny gloss effect, pastel red color, simple and clean design, white background, 3D render with soft lighting, mobile game asset',
+                    leonardo: 'cute kawaii strawberry game piece, sanrio style, round shape, glossy, pastel red, simple design, white background, 3d render, soft lighting, icon',
+                    playground: 'cute kawaii strawberry game piece, sanrio style, round glossy, pastel red, white background, 3d render',
+                    tensor: 'masterpiece, best quality, cute kawaii strawberry game piece, sanrio style, round shape, glossy, pastel red',
+                    sd: 'masterpiece, best quality, cute kawaii strawberry game piece, sanrio style, round shape, glossy, pastel red, simple design, white background, 3d render, soft lighting, icon'
+                },
+                {
+                    filename: 'piece_lemon.png',
+                    title: '🍋 柠檬消除元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: 'A cute kawaii lemon game piece icon, Sanrio style, round oval shape, shiny gloss effect, pastel yellow color, simple clean design, white background, 3D render soft lighting, mobile game asset',
+                    leonardo: 'cute kawaii lemon game piece, sanrio style, oval shape, glossy, pastel yellow, white background, 3d render',
+                    playground: 'cute kawaii lemon game piece, sanrio style, glossy yellow, white background',
+                    tensor: 'masterpiece, cute kawaii lemon game piece, sanrio style, oval shape, glossy, pastel yellow',
+                    sd: 'masterpiece, cute kawaii lemon game piece, sanrio style, oval shape, glossy, pastel yellow, white background, 3d render'
+                },
+                {
+                    filename: 'piece_grape.png',
+                    title: '🍇 葡萄消除元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: 'A cute kawaii grape cluster game piece icon, Sanrio style, round berries, shiny gloss effect, pastel purple color, simple clean design, white background, 3D render soft lighting, mobile game asset',
+                    leonardo: 'cute kawaii grape cluster game piece, sanrio style, round berries, glossy purple, white background',
+                    playground: 'cute kawaii grape cluster, sanrio style, glossy purple, white background',
+                    tensor: 'masterpiece, cute kawaii grape cluster game piece, sanrio style, round berries, glossy purple',
+                    sd: 'masterpiece, cute kawaii grape cluster game piece, sanrio style, round berries, glossy purple, white background'
+                },
+                {
+                    filename: 'piece_apple.png',
+                    title: '🍏 苹果消除元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: 'A cute kawaii green apple game piece icon, Sanrio style, round shape, shiny gloss effect, pastel green color, simple clean design, white background, 3D render soft lighting, mobile game asset',
+                    leonardo: 'cute kawaii green apple game piece, sanrio style, glossy, pastel green, white background',
+                    playground: 'cute kawaii green apple, sanrio style, glossy green, white background',
+                    tensor: 'masterpiece, cute kawaii green apple game piece, sanrio style, glossy, pastel green',
+                    sd: 'masterpiece, cute kawaii green apple game piece, sanrio style, glossy, pastel green, white background'
+                },
+                {
+                    filename: 'piece_blueberry.png',
+                    title: '🫐 蓝莓消除元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: 'A cute kawaii blueberry game piece icon, Sanrio style, round berry, shiny gloss effect, pastel blue color, simple clean design, white background, 3D render soft lighting, mobile game asset',
+                    leonardo: 'cute kawaii blueberry game piece, sanrio style, round, glossy blue, white background',
+                    playground: 'cute kawaii blueberry, sanrio style, glossy blue, white background',
+                    tensor: 'masterpiece, cute kawaii blueberry game piece, sanrio style, round, glossy blue',
+                    sd: 'masterpiece, cute kawaii blueberry game piece, sanrio style, round, glossy blue, white background'
+                },
+                {
+                    filename: 'piece_orange.png',
+                    title: '🍊 橘子消除元素',
+                    specs: ['100x100px', 'PNG透明底'],
+                    bing: 'A cute kawaii orange game piece icon, Sanrio style, round shape, shiny gloss effect, pastel orange color, simple clean design, white background, 3D render soft lighting, mobile game asset',
+                    leonardo: 'cute kawaii orange game piece, sanrio style, glossy orange, white background',
+                    playground: 'cute kawaii orange, sanrio style, glossy orange, white background',
+                    tensor: 'masterpiece, cute kawaii orange game piece, sanrio style, glossy orange',
+                    sd: 'masterpiece, cute kawaii orange game piece, sanrio style, glossy orange, white background'
+                }
+            ],
+            characters: [
+                {
+                    filename: 'hello_kitty_portrait.png',
+                    title: '👑 Hello Kitty 头像',
+                    specs: ['256x256px', 'PNG透明底'],
+                    bing: 'Hello Kitty character portrait, Sanrio official style, cute expression, big eyes, red bow, white face, no mouth, soft pastel colors, clean line art, character avatar, white background',
+                    leonardo: 'hello kitty portrait, sanrio style, cute, red bow, white cat, no mouth, pastel colors, clean lines',
+                    playground: 'hello kitty portrait, sanrio official style, cute face, red bow, white background',
+                    tensor: 'masterpiece, hello kitty, sanrio style, cute portrait, red bow, white cat, no mouth, pastel colors',
+                    sd: 'masterpiece, hello kitty, sanrio style, cute portrait, red bow, white cat, no mouth, pastel colors, clean lines'
+                },
+                {
+                    filename: 'my_melody_portrait.png',
+                    title: '🐰 My Melody 头像',
+                    specs: ['256x256px', 'PNG透明底'],
+                    bing: 'My Melody character portrait, Sanrio style, pink hood, white rabbit, cute face, big eyes, long ears, soft expression, pastel colors, character avatar, white background',
+                    leonardo: 'my melody portrait, sanrio style, pink hood, white rabbit, cute face, long ears',
+                    playground: 'my melody portrait, sanrio style, pink hood, cute rabbit, white background',
+                    tensor: 'masterpiece, my melody, sanrio style, pink hood, white rabbit, cute face, long ears',
+                    sd: 'masterpiece, my melody, sanrio style, pink hood, white rabbit, cute face, long ears'
+                }
+            ],
+            backgrounds: [
+                {
+                    filename: 'bg_main_menu.png',
+                    title: '🏠 主菜单背景',
+                    specs: ['1080x1920px', '竖屏'],
+                    bing: 'Sanrio themed main menu background, Hello Kitty house, pastel pink and white, cute dreamy atmosphere, soft clouds, sparkles and stars, candy land, vertical composition, mobile game background',
+                    leonardo: 'sanrio main menu background, hello kitty house, pastel pink, dreamy clouds, sparkles, candy land, vertical',
+                    playground: 'sanrio main menu, hello kitty house, pastel pink dreamy, clouds sparkles, candy land',
+                    tensor: 'masterpiece, sanrio main menu background, hello kitty house, pastel pink, dreamy clouds',
+                    sd: 'masterpiece, sanrio main menu background, hello kitty house, pastel pink, dreamy clouds, sparkles, candy land, vertical'
+                }
+            ],
+            ui: [
+                {
+                    filename: 'btn_start.png',
+                    title: '▶️ 开始按钮',
+                    specs: ['400x120px', 'PNG透明底'],
+                    bing: 'Cute game button design, Sanrio style, pink gradient, rounded corners, sparkle decorations, pastel colors, UI element, white background',
+                    leonardo: 'cute game button, sanrio style, pink gradient, rounded corners, sparkle, UI element',
+                    playground: 'cute game button, sanrio style, pink gradient rounded, sparkle decorations',
+                    tensor: 'masterpiece, cute game button, sanrio style, pink gradient, rounded corners, sparkle',
+                    sd: 'masterpiece, cute game button, sanrio style, pink gradient, rounded corners, sparkle, UI element'
+                },
+                {
+                    filename: 'icon_star.png',
+                    title: '⭐ 星星图标',
+                    specs: ['64x64px', 'PNG透明底'],
+                    bing: 'Cute kawaii star icon, Sanrio style, yellow gold, sparkle effects, rounded shape, game UI icon, white background',
+                    leonardo: 'cute star icon, sanrio style, yellow gold, sparkle, game UI',
+                    playground: 'cute kawaii star icon, sanrio style, gold sparkle',
+                    tensor: 'masterpiece, cute star icon, sanrio style, yellow gold, sparkle, game UI',
+                    sd: 'masterpiece, cute star icon, sanrio style, yellow gold, sparkle, game UI'
+                }
+            ]
+        };
+
+        function selectTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            renderAssets();
+        }
+
+        function getPrompt(asset) {
+            return asset[currentTool] || asset.bing;
+        }
+
+        function renderAssets() {
+            const container = document.getElementById('assetsList');
+            let html = '';
+
+            for (const [category, assets] of Object.entries(assetsData)) {
+                const categoryNames = {
+                    pieces: '🍬 消除元素（优先生成）',
+                    characters: '👑 角色立绘',
+                    backgrounds: '🖼️ 背景图',
+                    ui: '🎯 UI元素'
+                };
+
+                html += `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <div class="category-title">${categoryNames[category]}</div>
+                            <span style="background: #667eea; color: white; padding: 5px 15px; border-radius: 15px;">${assets.length} 个</span>
+                        </div>
+                        <div class="assets-grid">
+                `;
+
+                assets.forEach(asset => {
+                    const prompt = getPrompt(asset);
+                    html += `
+                        <div class="asset-card">
+                            <span class="asset-filename">${asset.filename}</span>
+                            <div class="asset-title">${asset.title}</div>
+                            <div class="asset-specs">
+                                ${asset.specs.map(spec => `<span class="spec-tag">${spec}</span>`).join('')}
+                            </div>
+                            <div class="prompt-box">
+                                <div class="prompt-label">📋 ${currentTool.toUpperCase()} 提示词</div>
+                                <div class="prompt-text">${prompt}</div>
+                            </div>
+                            <div class="asset-actions">
+                                <button class="btn btn-copy" onclick="copyPrompt('${prompt.replace(/'/g, "\\'")}', '${asset.filename}')">
+                                    📋 复制
+                                </button>
+                                <button class="btn btn-generate" onclick="openTool()">
+                                    🚀 去生成
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function copyPrompt(prompt, filename) {
+            navigator.clipboard.writeText(prompt).then(() => {
+                showToast(`✅ ${filename} 已复制！`);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = prompt;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ 已复制！');
+            });
+        }
+
+        function copyAllPrompts() {
+            let allPrompts = `🎨 三丽鸥消消乐 - ${currentTool.toUpperCase()} 提示词大全\n`;
+            allPrompts += '═══════════════════════════════════════\n\n';
+            allPrompts += '💡 复制后到对应AI工具网站生成图片\n';
+            allPrompts += '💡 生成后按文件名保存到 assets/images/ 对应文件夹\n\n';
+
+            for (const [category, assets] of Object.entries(assetsData)) {
+                allPrompts += `【${category}】\n`;
+                assets.forEach((asset, i) => {
+                    allPrompts += `${i+1}. ${asset.filename}\n`;
+                    allPrompts += `${getPrompt(asset)}\n\n`;
+                });
+            }
+
+            navigator.clipboard.writeText(allPrompts).then(() => {
+                showToast('✅ 全部提示词已复制！');
+            });
+        }
+
+        function openTool() {
+            const urls = {
+                bing: 'https://www.bing.com/create',
+                leonardo: 'https://leonardo.ai',
+                playground: 'https://playgroundai.com',
+                tensor: 'https://tensor.art',
+                sd: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui'
+            };
+            window.open(urls[currentTool], '_blank');
+        }
+
+        function openSelectedTool() {
+            openTool();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 初始化
+        renderAssets();
+    </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "wechat-devtools-mcp",
+  "version": "1.0.0",
+  "description": "微信开发者工具 MCP 服务器 - 提供自动化编译、预览、上传等功能",
+  "main": "server.js",
+  "bin": {
+    "wechat-devtools-mcp": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --version"
+  },
+  "keywords": [
+    "mcp",
+    "wechat",
+    "miniprogram",
+    "devtools",
+    "wechat-devtools"
+  ],
+  "author": "Claude Code",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

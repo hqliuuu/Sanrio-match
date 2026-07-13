@@ -1,0 +1,43 @@
+{
+  "id": 20,
+  "localId": 10,
+  "title": "音乐盒重奏",
+  "chapter": 2,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 32,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 6000,
+  "background": "assets/images/ui/backgrounds/chapter_2_bg.png",
+  "bgm": "chapter2_boss",
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 2,
+      "name": "音符柠檬",
+      "target": 20,
+      "current": 0
+    },
+    {
+      "type": "collect",
+      "pieceType": 3,
+      "name": "紫色旋律",
+      "target": 18,
+      "current": 0
+    },
+    {
+      "type": "special",
+      "name": "特殊糖果",
+      "target": 3,
+      "current": 0
+    }
+  ],
+  "boss": true
+}

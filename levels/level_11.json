@@ -1,0 +1,28 @@
+{
+  "id": 11,
+  "localId": 1,
+  "title": "音乐盒的序曲",
+  "chapter": 2,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 22,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "targetScore": 1800,
+  "background": "assets/images/ui/backgrounds/chapter_2_bg.png",
+  "bgm": "chapter2_musicbox",
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 2,
+      "name": "音符柠檬",
+      "target": 12,
+      "current": 0
+    }
+  ]
+}

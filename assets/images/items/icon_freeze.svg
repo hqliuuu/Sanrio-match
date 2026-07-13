@@ -1,0 +1,44 @@
+<!-- 冰冻道具图标 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="freezeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E0F7FA"/>
+      <stop offset="50%" style="stop-color:#81D4FA"/>
+      <stop offset="100%" style="stop-color:#4FC3F7"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- 背景圆形 -->
+  <circle cx="32" cy="32" r="30" fill="url(#freezeGrad)" stroke="#29B6F6" stroke-width="2"/>
+  <!-- 雪花 -->
+  <g fill="white" filter="url(#glow)">
+    <!-- 中心点 -->
+    <circle cx="32" cy="32" r="4"/>
+    <!-- 六条臂 -->
+    <g stroke="white" stroke-width="3" stroke-linecap="round">
+      <line x1="32" y1="12" x2="32" y2="24"/>
+      <line x1="32" y1="40" x2="32" y2="52"/>
+      <line x1="12" y1="32" x2="24" y2="32"/>
+      <line x1="40" y1="32" x2="52" y2="32"/>
+      <line x1="18" y1="18" x2="26" y2="26"/>
+      <line x1="38" y1="38" x2="46" y2="46"/>
+      <line x1="46" y1="18" x2="38" y2="26"/>
+      <line x1="26" y1="38" x2="18" y2="46"/>
+    </g>
+    <!-- 臂端点 -->
+    <circle cx="32" cy="10" r="2.5"/>
+    <circle cx="32" cy="54" r="2.5"/>
+    <circle cx="10" cy="32" r="2.5"/>
+    <circle cx="54" cy="32" r="2.5"/>
+    <circle cx="17" cy="17" r="2"/>
+    <circle cx="47" cy="47" r="2"/>
+    <circle cx="47" cy="17" r="2"/>
+    <circle cx="17" cy="47" r="2"/>
+  </g>
+</svg>

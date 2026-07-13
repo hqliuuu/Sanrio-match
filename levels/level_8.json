@@ -1,0 +1,33 @@
+{
+  "id": 8,
+  "title": "最后采购",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 27,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 3800,
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 1,
+      "name": "草莓",
+      "target": 16
+    },
+    {
+      "type": "collect",
+      "pieceType": 3,
+      "name": "巧克力",
+      "target": 16
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_normal.mp3"
+}

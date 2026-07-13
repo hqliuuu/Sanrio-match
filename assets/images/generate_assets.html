@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 三丽鸥消消乐 - AI素材生成器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, #FFF, #FFE4E1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.9);
+            padding: 20px 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #FF69B4;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .instructions h2 {
+            color: #FF1493;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tool-tab {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .tool-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tool-tab:hover {
+            transform: translateY(-2px);
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            background: rgba(255,255,255,0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .category-title {
+            font-size: 1.5em;
+            color: #FF1493;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-count {
+            background: #FF69B4;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            border-color: #FFB6C1;
+        }
+
+        .asset-card.p0 {
+            border-left: 5px solid #FF1493;
+        }
+
+        .asset-card.p1 {
+            border-left: 5px solid #FF69B4;
+        }
+
+        .asset-card.p2 {
+            border-left: 5px solid #FFB6C1;
+        }
+
+        .asset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .asset-filename {
+            background: #333;
+            color: #4CAF50;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .asset-priority {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .priority-p0 { background: #FF1493; color: white; }
+        .priority-p1 { background: #FF69B4; color: white; }
+        .priority-p2 { background: #FFB6C1; color: #333; }
+
+        .asset-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .asset-specs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .spec-tag {
+            background: #f5f5f5;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .prompt-container {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .prompt-label {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .prompt-text {
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.6;
+            max-height: 120px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prompt-text::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(transparent, #f8f9fa);
+        }
+
+        .asset-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-copy:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-generate:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(255,105,180,0.4);
+        }
+
+        .batch-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .fab {
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fab-primary {
+            background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+            color: white;
+        }
+
+        .fab-secondary {
+            background: white;
+            color: #FF1493;
+        }
+
+        .fab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1001;
+            font-weight: bold;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #FF69B4;
+            background: white;
+            color: #FF69B4;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #FF69B4;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .assets-grid { grid-template-columns: 1fr; }
+            .stats-bar { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎀 三丽鸥梦幻消消乐</h1>
+            <p style="color: white; font-size: 1.2em; opacity: 0.9;">AI视觉素材生成器 | Midjourney & Stable Diffusion 提示词库</p>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-box">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">消除元素</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">24+</div>
+                <div class="stat-label">角色立绘</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">30+</div>
+                <div class="stat-label">UI元素</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">背景图</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">150+</div>
+                <div class="stat-label">总素材数</div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>📖 使用说明</h2>
+            <div class="tool-tabs">
+                <button class="tool-tab active" onclick="switchTool('midjourney')">🎨 Midjourney</button>
+                <button class="tool-tab" onclick="switchTool('sd')">🖼️ Stable Diffusion</button>
+                <button class="tool-tab" onclick="switchTool('dalle')">✨ DALL-E 3</button>
+            </div>
+            <ol style="margin-left: 20px; line-height: 2; color: #333;">
+                <li><strong>选择AI工具</strong>：点击上方标签切换 Midjourney / SD / DALL-E 提示词</li>
+                <li><strong>复制提示词</strong>：点击任意素材卡片的"📋 复制提示词"按钮</li>
+                <li><strong>生成图片</strong>：点击"🎨 去生成"跳转到对应AI工具</li>
+                <li><strong>按文件名保存</strong>：使用卡片顶部显示的黑色文件名保存图片</li>
+            </ol>
+            <p style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 10px; color: #856404;">
+                💡 <strong>提示</strong>：优先级 P0(红色)=必须，P1(粉色)=重要，P2(浅粉)=可选
+            </p>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterAssets('all')">全部</button>
+            <button class="filter-btn" onclick="filterAssets('p0')">🔴 P0 必须</button>
+            <button class="filter-btn" onclick="filterAssets('p1')">🟠 P1 重要</button>
+            <button class="filter-btn" onclick="filterAssets('p2')">🟡 P2 可选</button>
+            <button class="filter-btn" onclick="filterAssets('pieces')">🍬 消除元素</button>
+            <button class="filter-btn" onclick="filterAssets('characters')">👑 角色</button>
+            <button class="filter-btn" onclick="filterAssets('backgrounds')">🖼️ 背景</button>
+            <button class="filter-btn" onclick="filterAssets('ui')">🎯 UI</button>
+        </div>
+
+        <div id="assetsContainer"></div>
+    </div>
+
+    <div class="batch-actions">
+        <button class="fab fab-secondary" onclick="copyAllPrompts()">
+            📋 复制全部
+        </button>
+        <button class="fab fab-primary" onclick="openMidjourney()">
+            🎨 打开 Midjourney
+        </button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 素材数据库
+        const assetsDB = {
+            pieces: [
+                {
+                    id: 'piece_01',
+                    filename: 'piece_strawberry.png',
+                    title: '🍓 草莓消除元素',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii strawberry game piece icon, Sanrio style, round and plump, shiny gloss effect, pastel red color, simple and clean design, white background, 3D render with soft lighting, mobile game asset, --ar 1:1 --v 6.0 --style cute',
+                    sd: 'masterpiece, best quality, cute kawaii strawberry game piece, sanrio style, round shape, glossy, pastel red, simple design, white background, 3d render, soft lighting, icon',
+                    dalle: 'A cute kawaii strawberry game piece icon in Sanrio style, round and plump with shiny gloss effect in pastel red color, simple clean design on white background, 3D render with soft lighting, mobile game asset'
+                },
+                {
+                    id: 'piece_02',
+                    filename: 'piece_lemon.png',
+                    title: '🍋 柠檬消除元素',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii lemon game piece icon, Sanrio style, round oval shape, shiny gloss effect, pastel yellow color, simple clean design, white background, 3D render soft lighting, mobile game asset, --ar 1:1 --v 6.0 --style cute',
+                    sd: 'masterpiece, best quality, cute kawaii lemon game piece, sanrio style, oval shape, glossy, pastel yellow, simple design, white background, 3d render',
+                    dalle: 'A cute kawaii lemon game piece icon in Sanrio style, round oval shape with shiny gloss effect in pastel yellow color, simple clean design on white background'
+                },
+                {
+                    id: 'piece_03',
+                    filename: 'piece_grape.png',
+                    title: '🍇 葡萄消除元素',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii grape cluster game piece icon, Sanrio style, round berries, shiny gloss effect, pastel purple color, simple clean design, white background, 3D render soft lighting, mobile game asset, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, cute kawaii grape cluster game piece, sanrio style, round berries, glossy purple, white background',
+                    dalle: 'A cute kawaii grape cluster game piece icon in Sanrio style, round berries with shiny gloss effect in pastel purple color'
+                },
+                {
+                    id: 'piece_04',
+                    filename: 'piece_apple.png',
+                    title: '🍏 苹果消除元素',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii green apple game piece icon, Sanrio style, round shape, shiny gloss effect, pastel green color, simple clean design, white background, 3D render soft lighting, mobile game asset, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, cute kawaii green apple game piece, sanrio style, glossy, pastel green, white background',
+                    dalle: 'A cute kawaii green apple game piece icon in Sanrio style, round shape with shiny gloss effect in pastel green color'
+                },
+                {
+                    id: 'piece_05',
+                    filename: 'piece_blueberry.png',
+                    title: '🫐 蓝莓消除元素',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii blueberry game piece icon, Sanrio style, round berry, shiny gloss effect, pastel blue color, simple clean design, white background, 3D render soft lighting, mobile game asset, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, cute kawaii blueberry game piece, sanrio style, round, glossy blue, white background',
+                    dalle: 'A cute kawaii blueberry game piece icon in Sanrio style, round berry with shiny gloss effect in pastel blue color'
+                },
+                {
+                    id: 'piece_06',
+                    filename: 'piece_orange.png',
+                    title: '🍊 橘子消除元素',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii orange game piece icon, Sanrio style, round shape, shiny gloss effect, pastel orange color, simple clean design, white background, 3D render soft lighting, mobile game asset, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, cute kawaii orange game piece, sanrio style, glossy orange, white background',
+                    dalle: 'A cute kawaii orange game piece icon in Sanrio style, round shape with shiny gloss effect in pastel orange color'
+                },
+                {
+                    id: 'piece_special_01',
+                    filename: 'piece_striped_h.png',
+                    title: '⭐ 横向条纹糖果',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii striped candy game piece, horizontal stripes, Sanrio style, wrapped candy, rainbow stripes, sparkle effects, white background, 3D render, mobile game special piece, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, cute striped candy, horizontal rainbow stripes, sanrio style, sparkle effects, white background',
+                    dalle: 'A cute kawaii striped candy game piece with horizontal rainbow stripes in Sanrio style with sparkle effects'
+                },
+                {
+                    id: 'piece_special_02',
+                    filename: 'piece_color_bomb.png',
+                    title: '🌈 彩虹炸弹',
+                    category: 'pieces',
+                    priority: 'p0',
+                    specs: ['100x100px', 'PNG透明底'],
+                    midjourney: 'A cute kawaii rainbow bomb candy game piece, sparkling rainbow sphere, glitter effects, Sanrio style, magical, white background, 3D render, mobile game special power-up, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, rainbow bomb power-up, sparkling sphere, glitter effects, magical, sanrio style',
+                    dalle: 'A cute kawaii rainbow bomb candy game piece, sparkling rainbow sphere with glitter effects, magical power-up'
+                }
+            ],
+            characters: [
+                {
+                    id: 'char_01',
+                    filename: 'hello_kitty_portrait.png',
+                    title: '👑 Hello Kitty 头像',
+                    category: 'characters',
+                    priority: 'p0',
+                    specs: ['256x256px', 'PNG透明底'],
+                    midjourney: 'Hello Kitty character portrait, Sanrio official style, cute expression, big eyes, red bow, white face, no mouth, soft pastel colors, clean line art, character avatar for visual novel, white background, --ar 1:1 --v 6.0 --niji 5',
+                    sd: 'masterpiece, hello kitty, sanrio style, cute portrait, red bow, white cat, no mouth, pastel colors, clean lines',
+                    dalle: 'Hello Kitty character portrait in official Sanrio style, cute expression with big eyes and red bow, white face with no mouth, soft pastel colors on white background'
+                },
+                {
+                    id: 'char_02',
+                    filename: 'my_melody_portrait.png',
+                    title: '🐰 My Melody 头像',
+                    category: 'characters',
+                    priority: 'p0',
+                    specs: ['256x256px', 'PNG透明底'],
+                    midjourney: 'My Melody character portrait, Sanrio style, pink hood, white rabbit, cute face, big eyes, long ears, soft expression, pastel colors, character avatar, white background, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, my melody, sanrio style, pink hood, white rabbit, cute face, long ears',
+                    dalle: 'My Melody character portrait in Sanrio style, white rabbit with pink hood, cute face with big eyes and long ears'
+                },
+                {
+                    id: 'char_03',
+                    filename: 'cinnamonroll_portrait.png',
+                    title: '☁️ Cinnamoroll 头像',
+                    category: 'characters',
+                    priority: 'p1',
+                    specs: ['256x256px', 'PNG透明底'],
+                    midjourney: 'Cinnamoroll character portrait, Sanrio style, white puppy, long ears, blue eyes, curly tail, cute expression, pastel blue background, character avatar, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, cinnamoroll, sanrio style, white puppy, long ears, blue eyes, curly tail',
+                    dalle: 'Cinnamoroll character portrait in Sanrio style, white puppy with long ears and blue eyes, curly tail'
+                }
+            ],
+            backgrounds: [
+                {
+                    id: 'bg_01',
+                    filename: 'bg_main_menu.png',
+                    title: '🏠 主菜单背景',
+                    category: 'backgrounds',
+                    priority: 'p0',
+                    specs: ['1080x1920px', 'JPG'],
+                    midjourney: 'Sanrio themed main menu background, Hello Kitty house, pastel pink and white, cute dreamy atmosphere, soft clouds, sparkles and stars, candy land, vertical composition, mobile game background, --ar 9:16 --v 6.0 --style cute',
+                    sd: 'masterpiece, sanrio main menu background, hello kitty house, pastel pink, dreamy clouds, sparkles, candy land, vertical',
+                    dalle: 'Sanrio themed main menu background for mobile game, Hello Kitty house in pastel pink and white, cute dreamy atmosphere with soft clouds, sparkles and stars, candy land theme, vertical composition'
+                },
+                {
+                    id: 'bg_02',
+                    filename: 'bg_chapter1.png',
+                    title: '🍰 第一章背景-甜品派对',
+                    category: 'backgrounds',
+                    priority: 'p1',
+                    specs: ['1080x1920px', 'JPG'],
+                    midjourney: 'Sanrio themed bakery kitchen background, Hello Kitty cooking, pastel pink, cakes and pastries, cute kitchen utensils, warm lighting, mobile game background, --ar 9:16 --v 6.0',
+                    sd: 'masterpiece, sanrio bakery background, hello kitty, pastel pink, cakes, pastries, cute kitchen, warm lighting',
+                    dalle: 'Sanrio themed bakery kitchen background, Hello Kitty cooking scene in pastel pink, cakes and pastries, cute kitchen utensils, warm lighting'
+                }
+            ],
+            ui: [
+                {
+                    id: 'ui_01',
+                    filename: 'btn_start.png',
+                    title: '▶️ 开始按钮',
+                    category: 'ui',
+                    priority: 'p0',
+                    specs: ['400x120px', 'PNG透明底'],
+                    midjourney: 'Cute game button design, Sanrio style, pink gradient, rounded corners, sparkle decorations, pastel colors, UI element, white background, --ar 4:1 --v 6.0',
+                    sd: 'masterpiece, cute game button, sanrio style, pink gradient, rounded corners, sparkle, UI element',
+                    dalle: 'Cute game button design in Sanrio style, pink gradient with rounded corners and sparkle decorations, pastel colors'
+                },
+                {
+                    id: 'ui_02',
+                    filename: 'icon_star.png',
+                    title: '⭐ 星星图标',
+                    category: 'ui',
+                    priority: 'p0',
+                    specs: ['64x64px', 'PNG透明底'],
+                    midjourney: 'Cute kawaii star icon, Sanrio style, yellow gold, sparkle effects, rounded shape, game UI icon, white background, --ar 1:1 --v 6.0',
+                    sd: 'masterpiece, cute star icon, sanrio style, yellow gold, sparkle, game UI',
+                    dalle: 'Cute kawaii star icon in Sanrio style, yellow gold with sparkle effects and rounded shape'
+                }
+            ]
+        };
+
+        let currentTool = 'midjourney';
+        let currentFilter = 'all';
+
+        // 切换AI工具
+        function switchTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderAssets();
+        }
+
+        // 过滤素材
+        function filterAssets(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderAssets();
+        }
+
+        // 获取提示词
+        function getPrompt(asset) {
+            switch(currentTool) {
+                case 'midjourney': return asset.midjourney;
+                case 'sd': return asset.sd;
+                case 'dalle': return asset.dalle;
+                default: return asset.midjourney;
+            }
+        }
+
+        // 渲染素材列表
+        function renderAssets() {
+            const container = document.getElementById('assetsContainer');
+            let html = '';
+
+            for (const [category, assets] of Object.entries(assetsDB)) {
+                // 过滤
+                let filteredAssets = assets;
+                if (currentFilter !== 'all') {
+                    if (currentFilter.startsWith('p')) {
+                        filteredAssets = assets.filter(a => a.priority === currentFilter);
+                    } else {
+                        filteredAssets = assets.filter(a => a.category === currentFilter);
+                    }
+                }
+
+                if (filteredAssets.length === 0) continue;
+
+                const categoryNames = {
+                    pieces: '🍬 消除元素',
+                    characters: '👑 角色立绘',
+                    backgrounds: '🖼️ 背景图',
+                    ui: '🎯 UI元素'
+                };
+
+                html += `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <div class="category-title">${categoryNames[category]}</div>
+                            <div class="category-count">${filteredAssets.length} 个</div>
+                        </div>
+                        <div class="assets-grid">
+                `;
+
+                filteredAssets.forEach(asset => {
+                    const prompt = getPrompt(asset);
+                    const safePrompt = prompt.replace(/'/g, "\\'");
+
+                    html += `
+                        <div class="asset-card ${asset.priority}">
+                            <div class="asset-header">
+                                <span class="asset-filename">${asset.filename}</span>
+                                <span class="asset-priority priority-${asset.priority}">${asset.priority.toUpperCase()}</span>
+                            </div>
+                            <div class="asset-title">${asset.title}</div>
+                            <div class="asset-specs">
+                                ${asset.specs.map(spec => `<span class="spec-tag">${spec}</span>`).join('')}
+                            </div>
+                            <div class="prompt-container">
+                                <div class="prompt-label">
+                                    <span>📋 ${currentTool.toUpperCase()} 提示词</span>
+                                    <span>点击复制</span>
+                                </div>
+                                <div class="prompt-text">${prompt}</div>
+                            </div>
+                            <div class="asset-actions">
+                                <button class="btn-copy" onclick="copyPrompt('${safePrompt}', '${asset.filename}')">
+                                    📋 复制提示词
+                                </button>
+                                <button class="btn-generate" onclick="openAITool()">
+                                    🎨 去生成
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        // 复制提示词
+        function copyPrompt(prompt, filename) {
+            navigator.clipboard.writeText(prompt).then(() => {
+                showToast(`✅ ${filename} 提示词已复制！`);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = prompt;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ 提示词已复制！');
+            });
+        }
+
+        // 复制全部提示词
+        function copyAllPrompts() {
+            let allPrompts = `🎨 三丽鸥消消乐 - ${currentTool.toUpperCase()} 提示词大全\\n`;
+            allPrompts += '═══════════════════════════════════════════════════\\n\\n';
+
+            for (const [category, assets] of Object.entries(assetsDB)) {
+                allPrompts += `【${category}】\\n`;
+                assets.forEach((asset, i) => {
+                    allPrompts += `${i+1}. ${asset.filename}\\n`;
+                    allPrompts += `${getPrompt(asset)}\\n\\n`;
+                });
+            }
+
+            navigator.clipboard.writeText(allPrompts).then(() => {
+                showToast('✅ 全部提示词已复制！');
+            });
+        }
+
+        // 打开AI工具
+        function openAITool() {
+            let url = 'https://www.midjourney.com';
+            if (currentTool === 'sd') url = 'https://stablediffusionweb.com';
+            if (currentTool === 'dalle') url = 'https://chat.openai.com';
+            window.open(url, '_blank');
+        }
+
+        function openMidjourney() {
+            window.open('https://www.midjourney.com', '_blank');
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 初始化
+        renderAssets();
+    </script>
+</body>
+</html>

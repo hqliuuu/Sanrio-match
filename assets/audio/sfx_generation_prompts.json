@@ -1,0 +1,200 @@
+{
+  "project": "三丽鸥梦幻消消乐 - 音效生成配置",
+  "total_sfx": 15,
+  "recommended_tools": ["ElevenLabs Sound Effects", "Freesound.org", "ChipTone"],
+  "output_format": {
+    "format": "MP3",
+    "bitrate": "96kbps",
+    "sample_rate": "44.1kHz",
+    "channels": "mono"
+  },
+  "sfx_tracks": [
+    {
+      "id": "SFX_001",
+      "filename": "sfx_match_1.mp3",
+      "category": "消除音效",
+      "description": "3个元素匹配消除",
+      "duration": "0.5s",
+      "elevenlabs_prompt": "Cute pop sound, bubble burst, satisfying mobile game match sound, high pitch ding, magical sparkle, short and sweet, kawaii game effect",
+      "reference": "类似Candy Crush消除时的清脆声音",
+      "volume_db": -8
+    },
+    {
+      "id": "SFX_002",
+      "filename": "sfx_match_2.mp3",
+      "category": "消除音效",
+      "description": "4个元素匹配消除",
+      "duration": "0.8s",
+      "elevenlabs_prompt": "Magical chime, ascending scale, sparkle sound, more satisfying than simple pop, fairy dust magic, mobile game power match, cute and impressive",
+      "reference": "比match_1更有层次感",
+      "volume_db": -7
+    },
+    {
+      "id": "SFX_003",
+      "filename": "sfx_match_3.mp3",
+      "category": "消除音效",
+      "description": "5个及以上元素匹配消除",
+      "duration": "1.2s",
+      "elevenlabs_prompt": "Epic magical explosion, triumphant chime, rainbow sparkle sound, special achievement, combo celebration, spectacular game effect, cascading joy",
+      "reference": "类似获得大奖的华丽音效",
+      "volume_db": -6
+    },
+    {
+      "id": "SFX_004",
+      "filename": "sfx_special_match.mp3",
+      "category": "消除音效",
+      "description": "特殊元素激活",
+      "duration": "1.0s",
+      "elevenlabs_prompt": "Power-up activation, electric spark, whoosh and zap, special ability ready, magical transformation, energy charge, super power sound",
+      "reference": "变身/特殊技能释放音效",
+      "volume_db": -6
+    },
+    {
+      "id": "SFX_005",
+      "filename": "sfx_click.mp3",
+      "category": "UI音效",
+      "description": "按钮点击",
+      "duration": "0.2s",
+      "elevenlabs_prompt": "Cute button click, soft pop, UI selection sound, kawaii interface feedback, gentle tap, mobile game menu click",
+      "reference": "柔和不刺耳的点击声",
+      "volume_db": -10
+    },
+    {
+      "id": "SFX_006",
+      "filename": "sfx_level_complete.mp3",
+      "category": "游戏事件",
+      "description": "关卡完成胜利",
+      "duration": "3.0s",
+      "elevenlabs_prompt": "Victory fanfare, level complete celebration, triumphant music jingle, achievement unlocked, stars appearing sound, happy and rewarding, mobile game win",
+      "reference": "胜利时的庆祝音效",
+      "volume_db": -5
+    },
+    {
+      "id": "SFX_007",
+      "filename": "sfx_level_fail.mp3",
+      "category": "游戏事件",
+      "description": "关卡失败",
+      "duration": "2.0s",
+      "elevenlabs_prompt": "Soft defeat sound, gentle failure jingle, try again encouragement, not scary, cute game over, hopeful retry, uplifting failure",
+      "reference": "温和的失败提示，不打击玩家",
+      "volume_db": -8
+    },
+    {
+      "id": "SFX_008",
+      "filename": "sfx_star_get.mp3",
+      "category": "游戏事件",
+      "description": "获得星星",
+      "duration": "0.6s",
+      "elevenlabs_prompt": "Star collection sound, sparkling chime, achievement ping, magical star appear, twinkle and shine, reward acquisition",
+      "reference": "获得星星时的闪亮音效",
+      "volume_db": -7
+    },
+    {
+      "id": "SFX_009",
+      "filename": "sfx_coin_get.mp3",
+      "category": "游戏事件",
+      "description": "获得金币",
+      "duration": "0.4s",
+      "elevenlabs_prompt": "Coin collection, gold pickup sound, treasure acquisition, satisfying money sound, ching ching, cute coins",
+      "reference": "金币收集的经典声音",
+      "volume_db": -8
+    },
+    {
+      "id": "SFX_010",
+      "filename": "sfx_swap.mp3",
+      "category": "游戏操作",
+      "description": "元素交换",
+      "duration": "0.3s",
+      "elevenlabs_prompt": "Swap sound, whoosh slide, element exchange, smooth transition, quick movement, game piece slide",
+      "reference": "滑动物品交换的声音",
+      "volume_db": -10
+    },
+    {
+      "id": "SFX_011",
+      "filename": "sfx_swap_fail.mp3",
+      "category": "游戏操作",
+      "description": "无效交换",
+      "duration": "0.4s",
+      "elevenlabs_prompt": "Invalid move sound, gentle error notification, soft buzz, not allowed action, cute rejection, try again hint",
+      "reference": "错误提示音，温和不刺耳",
+      "volume_db": -10
+    },
+    {
+      "id": "SFX_012",
+      "filename": "sfx_piece_drop.mp3",
+      "category": "游戏操作",
+      "description": "元素下落",
+      "duration": "0.2s",
+      "elevenlabs_prompt": "Gentle drop sound, soft thud, candy falling, cute landing, game piece settle, light impact",
+      "reference": "糖果掉落的声音",
+      "volume_db": -12
+    },
+    {
+      "id": "SFX_013",
+      "filename": "sfx_ice_break.mp3",
+      "category": "障碍物",
+      "description": "冰块破碎",
+      "duration": "0.5s",
+      "elevenlabs_prompt": "Ice breaking sound, crystal shatter, frozen block cracking, magical ice melt, glass breaking but cute, frosty destruction",
+      "reference": "冰块破碎的清脆声",
+      "volume_db": -8
+    },
+    {
+      "id": "SFX_014",
+      "filename": "sfx_chocolate_clear.mp3",
+      "category": "障碍物",
+      "description": "巧克力清除",
+      "duration": "0.6s",
+      "elevenlabs_prompt": "Chocolate melting sound, cocoa dissolve, sweet dessert destruction, gooey splash, yummy break",
+      "reference": "巧克力融化的声音",
+      "volume_db": -8
+    },
+    {
+      "id": "SFX_015",
+      "filename": "sfx_dialogue_pop.mp3",
+      "category": "UI音效",
+      "description": "对话框弹出",
+      "duration": "0.3s",
+      "elevenlabs_prompt": "Dialogue box appear, cute popup sound, speech bubble notification, character talk start, friendly alert",
+      "reference": "对话气泡弹出音",
+      "volume_db": -10
+    }
+  ],
+  "voice_sfx": [
+    {
+      "character": "hello_kitty",
+      "sounds": [
+        {
+          "filename": "voice_kitty_greeting.mp3",
+          "description": "打招呼",
+          "text": "你好呀！我是Hello Kitty！"
+        },
+        {
+          "filename": "voice_kitty_thanks.mp3",
+          "description": "感谢",
+          "text": "谢谢你！"
+        },
+        {
+          "filename": "voice_kitty_encourage.mp3",
+          "description": "鼓励",
+          "text": "加油哦！"
+        }
+      ]
+    },
+    {
+      "character": "my_melody",
+      "sounds": [
+        {
+          "filename": "voice_melody_greeting.mp3",
+          "description": "打招呼",
+          "text": "我是美乐蒂！"
+        },
+        {
+          "filename": "voice_melody_happy.mp3",
+          "description": "开心",
+          "text": "好开心！"
+        }
+      ]
+    }
+  ]
+}

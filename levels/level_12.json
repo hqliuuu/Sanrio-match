@@ -1,0 +1,28 @@
+{
+  "id": 12,
+  "localId": 2,
+  "title": "花园音符",
+  "chapter": 2,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 23,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "targetScore": 2200,
+  "background": "assets/images/ui/backgrounds/chapter_2_bg.png",
+  "bgm": "chapter2_musicbox",
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 5,
+      "name": "蓝色音符",
+      "target": 14,
+      "current": 0
+    }
+  ]
+}

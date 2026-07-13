@@ -1,0 +1,26 @@
+{
+  "id": 2,
+  "title": "寻找巧克力",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 22,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "targetScore": 1500,
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 3,
+      "name": "巧克力",
+      "target": 12
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_normal.mp3"
+}

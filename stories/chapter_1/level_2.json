@@ -1,0 +1,67 @@
+{
+  "level_id": 2,
+  "chapter_id": 1,
+  "title": "寻找巧克力",
+  "pre_dialogue": [
+    {
+      "character": "hello_kitty",
+      "expression": "thinking",
+      "position": "center",
+      "text": "草莓收集好了，接下来需要巧克力...",
+      "voice": "kitty_thinking_01.mp3",
+      "animation": "thinking"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "surprised",
+      "position": "center",
+      "text": "啊！巧克力被藏在冰块里了！",
+      "voice": "kitty_surprise_01.mp3",
+      "animation": "jump"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "determined",
+      "position": "center",
+      "text": "消除冰块旁边的元素，就能把巧克力救出来！",
+      "voice": "kitty_explain_01.mp3",
+      "animation": "point"
+    }
+  ],
+  "gameplay_hint": {
+    "type": "mechanic",
+    "message": "消除冰块周围的元素可以打破冰块！",
+    "highlight": "ice_blocks"
+  },
+  "post_dialogue": [
+    {
+      "character": "hello_kitty",
+      "expression": "happy",
+      "position": "center",
+      "text": "太好了！巧克力都救出来了！",
+      "voice": "kitty_happy_01.mp3",
+      "animation": "clap"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "excited",
+      "position": "center",
+      "text": "可以做美味的巧克力蛋糕啦！",
+      "voice": "kitty_excited_02.mp3",
+      "animation": "spin"
+    }
+  ],
+  "objective": {
+    "type": "clear_obstacle",
+    "target": "ice_block",
+    "count": 15,
+    "description": "打破15个冰块救出巧克力",
+    "hint": "在冰块旁边消除元素来打破它们！"
+  },
+  "difficulty": "easy",
+  "stars_requirement": {
+    "1_star": 1500,
+    "2_stars": 3000,
+    "3_stars": 5000
+  }
+}

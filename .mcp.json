@@ -1,0 +1,6 @@
+{
+  "wechat-devtools": {
+    "command": "node",
+    "args": ["/Users/didi/sanrio-match/wechat-devtools-mcp/server.js"]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "chapter_id": 1,
+  "title": "Hello Kitty的甜品派对",
+  "title_ja": "ハローキティのスイーツパーティー",
+  "description": "Hello Kitty正在准备一场盛大的甜品派对，但派对需要的食材却神秘地消失了！快来帮助Kitty收集食材，让派对顺利举行吧！",
+  "unlock_condition": "完成序章",
+  "main_character": "hello_kitty",
+  "supporting_characters": [
+    {
+      "id": "my_melody",
+      "role": "好友，帮助收集装饰",
+      "appearance_levels": [3, 7, 10]
+    },
+    {
+      "id": "cinnamonroll",
+      "role": "好友，负责运送食材",
+      "appearance_levels": [5, 8, 10]
+    }
+  ],
+  "villain": null,
+  "bgm": "sweet_party_bgm.mp3",
+  "background": "kitty_kitchen_bg.png",
+  "theme_color": "#FFB6C1",
+  "levels_count": 10,
+  "rewards": {
+    "complete_all": {
+      "character_skin": "hello_kitty_party_dress",
+      "profile_frame": "sweet_frame",
+      "bgm": "party_theme"
+    }
+  }
+}

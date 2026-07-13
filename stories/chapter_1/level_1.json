@@ -1,0 +1,75 @@
+{
+  "level_id": 1,
+  "chapter_id": 1,
+  "title": "派对前准备",
+  "pre_dialogue": [
+    {
+      "character": "hello_kitty",
+      "expression": "happy",
+      "position": "center",
+      "text": "你好呀！我是Hello Kitty！",
+      "voice": "kitty_greeting_01.mp3",
+      "animation": "wave"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "excited",
+      "position": "center",
+      "text": "我正在准备一场超~级棒的甜品派对！",
+      "voice": "kitty_excited_01.mp3",
+      "animation": "jump"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "thinking",
+      "position": "center",
+      "text": "但是...派对需要的草莓好像不够了...",
+      "voice": "kitty_worry_01.mp3",
+      "animation": "thinking"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "happy",
+      "position": "center",
+      "text": "你能帮我收集一些草莓吗？",
+      "voice": "kitty_ask_01.mp3",
+      "animation": "please"
+    }
+  ],
+  "gameplay_hint": {
+    "type": "tutorial",
+    "message": "点击两个相邻的元素交换位置，连成3个或以上相同的元素即可消除！",
+    "highlight": "board"
+  },
+  "post_dialogue": [
+    {
+      "character": "hello_kitty",
+      "expression": "joy",
+      "position": "center",
+      "text": "哇！谢谢你收集到这么多草莓！",
+      "voice": "kitty_thanks_01.mp3",
+      "animation": "spin"
+    },
+    {
+      "character": "hello_kitty",
+      "expression": "happy",
+      "position": "center",
+      "text": "派对一定会很成功的！继续加油哦！",
+      "voice": "kitty_encourage_01.mp3",
+      "animation": "wave"
+    }
+  ],
+  "objective": {
+    "type": "collect",
+    "target": "strawberry",
+    "count": 10,
+    "description": "收集10个草莓",
+    "hint": "消除红色元素可以获得草莓哦！"
+  },
+  "difficulty": "tutorial",
+  "stars_requirement": {
+    "1_star": 1000,
+    "2_stars": 2000,
+    "3_stars": 3500
+  }
+}

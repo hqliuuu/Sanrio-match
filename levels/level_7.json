@@ -1,0 +1,26 @@
+{
+  "id": 7,
+  "title": "派对装饰",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 26,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 3400,
+  "objectives": [
+    {
+      "type": "special",
+      "name": "特殊糖果",
+      "target": 2
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_normal.mp3"
+}

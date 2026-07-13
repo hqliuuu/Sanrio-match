@@ -1,0 +1,28 @@
+{
+  "id": 17,
+  "localId": 7,
+  "title": "森林合唱",
+  "chapter": 2,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 27,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 4200,
+  "background": "assets/images/ui/backgrounds/chapter_2_bg.png",
+  "bgm": "chapter2_explore",
+  "objectives": [
+    {
+      "type": "special",
+      "name": "特殊糖果",
+      "target": 3,
+      "current": 0
+    }
+  ]
+}

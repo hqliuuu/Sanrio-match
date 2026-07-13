@@ -1,0 +1,26 @@
+{
+  "id": 5,
+  "title": "云朵配送",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 24,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "targetScore": 2600,
+  "objectives": [
+    {
+      "type": "score",
+      "name": "分数",
+      "target": 2600
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_normal.mp3"
+}

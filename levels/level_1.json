@@ -1,0 +1,26 @@
+{
+  "id": 1,
+  "title": "派对前准备",
+  "chapter": 1,
+  "boardRows": 8,
+  "boardCols": 8,
+  "maxMoves": 20,
+  "availablePieces": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "targetScore": 1000,
+  "objectives": [
+    {
+      "type": "collect",
+      "pieceType": 1,
+      "name": "草莓",
+      "target": 10
+    }
+  ],
+  "background": "assets/images/ui/backgrounds/chapter_1_bg.png",
+  "bgm": "assets/audio/bgm/chapter1_normal.mp3"
+}

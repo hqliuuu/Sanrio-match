@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 三丽鸥消消乐 - AI音乐批量生成器 (含文件名)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .subtitle { opacity: 0.9; font-size: 1.1em; }
+
+        .filename-badge {
+            background: #FF6B6B;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 8px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .batch-controls {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .batch-controls h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #667eea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .music-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .track-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .track-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .track-header { margin-bottom: 10px; }
+
+        .track-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .track-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .prompt-box {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .prompt-box:hover {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+
+        .prompt-label {
+            font-size: 0.75em;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .prompt-text {
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.6;
+            word-break: break-word;
+            font-family: 'Courier New', monospace;
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #FF6B6B;
+        }
+
+        .track-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-copy:hover { background: #5568d3; }
+
+        .btn-generate {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-generate:hover { background: #6a4190; }
+
+        .category-section { margin-bottom: 40px; }
+
+        .category-title {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding: 15px 25px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            font-weight: bold;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 2;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #856404;
+            font-weight: bold;
+        }
+
+        .copy-hint {
+            font-size: 0.8em;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .music-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎀 三丽鸥梦幻消消乐</h1>
+            <p class="subtitle">AI音乐批量生成器 | 提示词已包含文件名，方便对应整理</p>
+        </header>
+
+        <div class="instructions">
+            <h3>📖 使用说明</h3>
+            <ol>
+                <li><strong>单个生成</strong>：点击任意卡片的"📋 复制"按钮</li>
+                <li><strong>批量生成</strong>：点击下方的"📋 复制全部BGM提示词"</li>
+                <li><strong>Suno AI设置</strong>：选择 <strong>Custom Mode</strong> → <strong>Instrumental</strong>（无歌词）</li>
+                <li><strong>保存文件</strong>：按提示词中的 <span class="highlight">[FILENAME:xxx.mp3]</span> 命名保存</li>
+            </ol>
+            <p style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; color: #856404; border-left: 4px solid #ffc107;">
+                💡 <strong>重要提示</strong>：每个提示词开头都有红色的文件名标记，生成后请务必按此文件名保存到对应文件夹
+            </p>
+        </div>
+
+        <div class="batch-controls">
+            <h2>🚀 批量操作</h2>
+            <div class="control-grid">
+                <button class="btn-primary" onclick="copyAllBGM()">
+                    📋 复制全部BGM提示词（含文件名）
+                </button>
+                <button class="btn-primary" onclick="copyAllSFX()">
+                    📋 复制全部音效提示词（含文件名）
+                </button>
+                <button class="btn-secondary" onclick="openSuno()">
+                    🎵 打开 Suno AI
+                </button>
+                <button class="btn-secondary" onclick="openElevenLabs()">
+                    🔊 打开 ElevenLabs
+                </button>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <div class="category-title">🎼 背景音乐 (30首)</div>
+            <div class="music-grid">
+                
+                <div class="track-card" id="track-BGM_001">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_main_theme.mp3</span>
+                        <div class="track-title">欢迎来到三丽鸥世界</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 G major</span>
+                        <span class="meta-tag">⏱️ 120 BPM</span>
+                        <span class="meta-tag">💫 warm,dreamy,welcoming</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_main_theme.mp3] Cute and dreamy opening theme for a Sanrio-themed mobile game, piano melody with gentle strings, magical fairy-tale atmosphere, warm and welcoming, G major, 120 BPM, Studio Ghibli-inspired, light bells, soft synth pads, heartwarming, instrumental only, no vocals')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_main_theme.mp3] Cute and dreamy opening theme for a Sanrio-themed mobile game, piano melody with gentle strings, magical fairy-tale atmosphere, warm and welcoming, G major, 120 BPM, Studio Ghibli-inspired, light bells, soft synth pads, heartwarming, instrumental only, no vocals</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_main_theme.mp3] Cute and dreamy opening theme for a Sanrio-themed mobile game, piano melody with gentle strings, magical fairy-tale atmosphere, warm and welcoming, G major, 120 BPM, Studio Ghibli-inspired, light bells, soft synth pads, heartwarming, instrumental only, no vocals'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_002">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter1_normal.mp3</span>
+                        <div class="track-title">甜品派对准备</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 F major</span>
+                        <span class="meta-tag">⏱️ 128 BPM</span>
+                        <span class="meta-tag">💫 cheerful,playful,sweet</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter1_normal.mp3] Upbeat and cheerful background music for a baking party scene, cute mobile game BGM, xylophone and glockenspiel melody, light electronic beat, pink and sweet atmosphere, F major, 128 BPM, playful and anticipation, Kawaii future bass elements, sugar rush feeling, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter1_normal.mp3] Upbeat and cheerful background music for a baking party scene, cute mobile game BGM, xylophone and glockenspiel melody, light electronic beat, pink and sweet atmosphere, F major, 128 BPM, playful and anticipation, Kawaii future bass elements, sugar rush feeling, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter1_normal.mp3] Upbeat and cheerful background music for a baking party scene, cute mobile game BGM, xylophone and glockenspiel melody, light electronic beat, pink and sweet atmosphere, F major, 128 BPM, playful and anticipation, Kawaii future bass elements, sugar rush feeling, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_003">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter1_explore.mp3</span>
+                        <div class="track-title">寻找食材</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 G major</span>
+                        <span class="meta-tag">⏱️ 125 BPM</span>
+                        <span class="meta-tag">💫 curious,playful,adventurous</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter1_explore.mp3] Playful adventure music for searching ingredients, accordion and pizzicato strings, light-hearted exploration, European bakery vibes, quirky and curious, G major, 125 BPM, walking pace, warm acoustic feeling, gentle drums, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter1_explore.mp3] Playful adventure music for searching ingredients, accordion and pizzicato strings, light-hearted exploration, European bakery vibes, quirky and curious, G major, 125 BPM, walking pace, warm acoustic feeling, gentle drums, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter1_explore.mp3] Playful adventure music for searching ingredients, accordion and pizzicato strings, light-hearted exploration, European bakery vibes, quirky and curious, G major, 125 BPM, walking pace, warm acoustic feeling, gentle drums, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_004">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter1_warm.mp3</span>
+                        <div class="track-title">派对布置</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 118 BPM</span>
+                        <span class="meta-tag">💫 warm,cozy,heartwarming</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter1_warm.mp3] Warm and cozy preparation music, string quartet with piano, collaborative and heartwarming, pastel colors atmosphere, C major, 118 BPM, flowing melody, orchestral but light, friendship theme, studio ghibli style orchestration, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter1_warm.mp3] Warm and cozy preparation music, string quartet with piano, collaborative and heartwarming, pastel colors atmosphere, C major, 118 BPM, flowing melody, orchestral but light, friendship theme, studio ghibli style orchestration, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter1_warm.mp3] Warm and cozy preparation music, string quartet with piano, collaborative and heartwarming, pastel colors atmosphere, C major, 118 BPM, flowing melody, orchestral but light, friendship theme, studio ghibli style orchestration, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_005">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter1_boss.mp3</span>
+                        <div class="track-title">派对开始！</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 D major</span>
+                        <span class="meta-tag">⏱️ 132 BPM</span>
+                        <span class="meta-tag">💫 triumphant,energetic,celebratory</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter1_boss.mp3] Celebration climax music for party finale, full band arrangement, brass section with strings, triumphant and joyful, upbeat party atmosphere, confetti and balloons feeling, D major, 132 BPM, energetic and festive, carnival elements, bright and colorful, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter1_boss.mp3] Celebration climax music for party finale, full band arrangement, brass section with strings, triumphant and joyful, upbeat party atmosphere, confetti and balloons feeling, D major, 132 BPM, energetic and festive, carnival elements, bright and colorful, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter1_boss.mp3] Celebration climax music for party finale, full band arrangement, brass section with strings, triumphant and joyful, upbeat party atmosphere, confetti and balloons feeling, D major, 132 BPM, energetic and festive, carnival elements, bright and colorful, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_006">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter2_musicbox.mp3</span>
+                        <div class="track-title">音乐盒的秘密</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 A minor</span>
+                        <span class="meta-tag">⏱️ 100 BPM</span>
+                        <span class="meta-tag">💫 dreamy,ethereal,magical</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter2_musicbox.mp3] Dreamy music box theme, celesta and glockenspiel, ethereal and magical, fairytale forest atmosphere, A minor, 100 BPM, delicate and fragile, sparkling sound effects, innocence and wonder, classical music box melody, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter2_musicbox.mp3] Dreamy music box theme, celesta and glockenspiel, ethereal and magical, fairytale forest atmosphere, A minor, 100 BPM, delicate and fragile, sparkling sound effects, innocence and wonder, classical music box melody, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter2_musicbox.mp3] Dreamy music box theme, celesta and glockenspiel, ethereal and magical, fairytale forest atmosphere, A minor, 100 BPM, delicate and fragile, sparkling sound effects, innocence and wonder, classical music box melody, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_007">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter2_explore.mp3</span>
+                        <div class="track-title">寻找音符</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 E minor</span>
+                        <span class="meta-tag">⏱️ 115 BPM</span>
+                        <span class="meta-tag">💫 curious,whimsical,magical</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter2_explore.mp3] Exploration music with music box elements, searching for notes, pizzicato strings with soft electronic beat, whimsical and curious, magical journey, E minor, 115 BPM, gentle drive, sparkle effects, mystery but cute, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter2_explore.mp3] Exploration music with music box elements, searching for notes, pizzicato strings with soft electronic beat, whimsical and curious, magical journey, E minor, 115 BPM, gentle drive, sparkle effects, mystery but cute, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter2_explore.mp3] Exploration music with music box elements, searching for notes, pizzicato strings with soft electronic beat, whimsical and curious, magical journey, E minor, 115 BPM, gentle drive, sparkle effects, mystery but cute, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_008">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter2_warm.mp3</span>
+                        <div class="track-title">旋律拼图</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 108 BPM</span>
+                        <span class="meta-tag">💫 heartwarming,rewarding,healing</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter2_warm.mp3] Heartwarming puzzle completion music, building melody layers, strings and woodwinds, satisfying progression, healing atmosphere, warm sunset feeling, C major, 108 BPM, gentle and rewarding, emotional resolution, friends helping theme, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter2_warm.mp3] Heartwarming puzzle completion music, building melody layers, strings and woodwinds, satisfying progression, healing atmosphere, warm sunset feeling, C major, 108 BPM, gentle and rewarding, emotional resolution, friends helping theme, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter2_warm.mp3] Heartwarming puzzle completion music, building melody layers, strings and woodwinds, satisfying progression, healing atmosphere, warm sunset feeling, C major, 108 BPM, gentle and rewarding, emotional resolution, friends helping theme, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_009">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter2_boss.mp3</span>
+                        <div class="track-title">音乐盒演奏</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 F major</span>
+                        <span class="meta-tag">⏱️ 120 BPM</span>
+                        <span class="meta-tag">💫 grand,emotional,cinematic</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter2_boss.mp3] Grand orchestral finale, My Melody theme variation, full string section with harp, emotional climax, magical concert atmosphere, dreams coming true, F major, 120 BPM, cinematic but cute, waltz rhythm, enchanted garden, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter2_boss.mp3] Grand orchestral finale, My Melody theme variation, full string section with harp, emotional climax, magical concert atmosphere, dreams coming true, F major, 120 BPM, cinematic but cute, waltz rhythm, enchanted garden, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter2_boss.mp3] Grand orchestral finale, My Melody theme variation, full string section with harp, emotional climax, magical concert atmosphere, dreams coming true, F major, 120 BPM, cinematic but cute, waltz rhythm, enchanted garden, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_010">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter3_cloud.mp3</span>
+                        <div class="track-title">云端漫步</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 A major</span>
+                        <span class="meta-tag">⏱️ 90 BPM</span>
+                        <span class="meta-tag">💫 peaceful,ethereal,relaxing</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter3_cloud.mp3] Ethereal cloud walking music, airy and floating sensation, synthesizer pads with wind chimes, peaceful and dreamy, soft pan flute, vast sky atmosphere, A major, 90 BPM, slow and relaxing, ambient nature sounds, cotton candy clouds, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter3_cloud.mp3] Ethereal cloud walking music, airy and floating sensation, synthesizer pads with wind chimes, peaceful and dreamy, soft pan flute, vast sky atmosphere, A major, 90 BPM, slow and relaxing, ambient nature sounds, cotton candy clouds, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter3_cloud.mp3] Ethereal cloud walking music, airy and floating sensation, synthesizer pads with wind chimes, peaceful and dreamy, soft pan flute, vast sky atmosphere, A major, 90 BPM, slow and relaxing, ambient nature sounds, cotton candy clouds, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_011">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter3_wind.mp3</span>
+                        <div class="track-title">风之试炼</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 D major</span>
+                        <span class="meta-tag">⏱️ 118 BPM</span>
+                        <span class="meta-tag">💫 adventurous,flowing,uplifting</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter3_wind.mp3] Wind adventure music, flowing and breezy, flute and strings, gentle movement, soaring feeling, open sky, D major, 118 BPM, forward momentum, nature elements, free and light, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter3_wind.mp3] Wind adventure music, flowing and breezy, flute and strings, gentle movement, soaring feeling, open sky, D major, 118 BPM, forward momentum, nature elements, free and light, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter3_wind.mp3] Wind adventure music, flowing and breezy, flute and strings, gentle movement, soaring feeling, open sky, D major, 118 BPM, forward momentum, nature elements, free and light, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_012">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter3_starry.mp3</span>
+                        <div class="track-title">星空接近</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 E minor</span>
+                        <span class="meta-tag">⏱️ 100 BPM</span>
+                        <span class="meta-tag">💫 wonderful,dreamy,cosmic</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter3_starry.mp3] Dreamy starry sky approach, twinkling sound effects, celestial bells with soft bass, magical night atmosphere, gentle arpeggios, wonder and beauty, E minor, 100 BPM, floating in space, cosmic but cute, constellation theme, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter3_starry.mp3] Dreamy starry sky approach, twinkling sound effects, celestial bells with soft bass, magical night atmosphere, gentle arpeggios, wonder and beauty, E minor, 100 BPM, floating in space, cosmic but cute, constellation theme, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter3_starry.mp3] Dreamy starry sky approach, twinkling sound effects, celestial bells with soft bass, magical night atmosphere, gentle arpeggios, wonder and beauty, E minor, 100 BPM, floating in space, cosmic but cute, constellation theme, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_013">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter3_boss.mp3</span>
+                        <div class="track-title">云端城堡</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 125 BPM</span>
+                        <span class="meta-tag">💫 majestic,triumphant,heavenly</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter3_boss.mp3] Cloud kingdom finale, grand but gentle, piano and orchestra, Cinnamoroll theme, epic sky castle, fluffy and majestic, C major, 125 BPM, triumphant and soft, heavenly choir, cotton cloud orchestra, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter3_boss.mp3] Cloud kingdom finale, grand but gentle, piano and orchestra, Cinnamoroll theme, epic sky castle, fluffy and majestic, C major, 125 BPM, triumphant and soft, heavenly choir, cotton cloud orchestra, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter3_boss.mp3] Cloud kingdom finale, grand but gentle, piano and orchestra, Cinnamoroll theme, epic sky castle, fluffy and majestic, C major, 125 BPM, triumphant and soft, heavenly choir, cotton cloud orchestra, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_014">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter4_lazy.mp3</span>
+                        <div class="track-title">午后的阳光</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 F major</span>
+                        <span class="meta-tag">⏱️ 85 BPM</span>
+                        <span class="meta-tag">💫 relaxed,cozy,jazzy</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter4_lazy.mp3] Lazy afternoon jazz, warm and cozy, double bass with soft brushes, relaxed vibe, sunny garden, coffee shop atmosphere, F major, 85 BPM, slow and comfortable, lo-fi hip hop elements, napping under tree, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter4_lazy.mp3] Lazy afternoon jazz, warm and cozy, double bass with soft brushes, relaxed vibe, sunny garden, coffee shop atmosphere, F major, 85 BPM, slow and comfortable, lo-fi hip hop elements, napping under tree, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter4_lazy.mp3] Lazy afternoon jazz, warm and cozy, double bass with soft brushes, relaxed vibe, sunny garden, coffee shop atmosphere, F major, 85 BPM, slow and comfortable, lo-fi hip hop elements, napping under tree, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_015">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter4_garden.mp3</span>
+                        <div class="track-title">花园散步</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 G major</span>
+                        <span class="meta-tag">⏱️ 110 BPM</span>
+                        <span class="meta-tag">💫 carefree,happy,natural</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter4_garden.mp3] Garden stroll music, acoustic guitar and whistle, light and carefree, flower blooming, walking pace, nature sounds, G major, 110 BPM, casual and happy, bird chirping, gentle breeze, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter4_garden.mp3] Garden stroll music, acoustic guitar and whistle, light and carefree, flower blooming, walking pace, nature sounds, G major, 110 BPM, casual and happy, bird chirping, gentle breeze, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter4_garden.mp3] Garden stroll music, acoustic guitar and whistle, light and carefree, flower blooming, walking pace, nature sounds, G major, 110 BPM, casual and happy, bird chirping, gentle breeze, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_016">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter4_tea.mp3</span>
+                        <div class="track-title">下午茶时光</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 105 BPM</span>
+                        <span class="meta-tag">💫 elegant,cute,refined</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter4_tea.mp3] Tea party background music, elegant and cute, harpsichord with strings, Victorian but kawaii, pastry and tea, friends chatting, C major, 105 BPM, genteel and sweet, porcelain cups, macarons and cakes, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter4_tea.mp3] Tea party background music, elegant and cute, harpsichord with strings, Victorian but kawaii, pastry and tea, friends chatting, C major, 105 BPM, genteel and sweet, porcelain cups, macarons and cakes, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter4_tea.mp3] Tea party background music, elegant and cute, harpsichord with strings, Victorian but kawaii, pastry and tea, friends chatting, C major, 105 BPM, genteel and sweet, porcelain cups, macarons and cakes, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_017">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter4_boss.mp3</span>
+                        <div class="track-title">完美的午后</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 F major</span>
+                        <span class="meta-tag">⏱️ 112 BPM</span>
+                        <span class="meta-tag">💫 fulfilling,warm,happy</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter4_boss.mp3] Perfect afternoon finale, satisfying conclusion, full acoustic band, Pompompurin theme, fulfillment and happiness, golden hour, F major, 112 BPM, warm and complete, contented sigh, best day ever, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter4_boss.mp3] Perfect afternoon finale, satisfying conclusion, full acoustic band, Pompompurin theme, fulfillment and happiness, golden hour, F major, 112 BPM, warm and complete, contented sigh, best day ever, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter4_boss.mp3] Perfect afternoon finale, satisfying conclusion, full acoustic band, Pompompurin theme, fulfillment and happiness, golden hour, F major, 112 BPM, warm and complete, contented sigh, best day ever, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_018">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter5_mischief.mp3</span>
+                        <div class="track-title">捣蛋计划</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 D minor</span>
+                        <span class="meta-tag">⏱️ 130 BPM</span>
+                        <span class="meta-tag">💫 mischievous,playful,naughty</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter5_mischief.mp3] Mischievous prank music, playful and slightly naughty, clarinet and xylophone, cartoon villain vibes, but cute and funny, not scary, D minor, 130 BPM, sneaky but adorable, Kuromi theme, prankster energy, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter5_mischief.mp3] Mischievous prank music, playful and slightly naughty, clarinet and xylophone, cartoon villain vibes, but cute and funny, not scary, D minor, 130 BPM, sneaky but adorable, Kuromi theme, prankster energy, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter5_mischief.mp3] Mischievous prank music, playful and slightly naughty, clarinet and xylophone, cartoon villain vibes, but cute and funny, not scary, D minor, 130 BPM, sneaky but adorable, Kuromi theme, prankster energy, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_019">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter5_chase.mp3</span>
+                        <div class="track-title">追逐游戏</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C minor</span>
+                        <span class="meta-tag">⏱️ 140 BPM</span>
+                        <span class="meta-tag">💫 energetic,exciting,comedic</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter5_chase.mp3] Cartoon chase music, fast and exciting, classic cartoon orchestration, Tom and Jerry style, but kawaii version, running and hiding, C minor, 140 BPM, energetic chase, comedic tension, slapstick elements, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter5_chase.mp3] Cartoon chase music, fast and exciting, classic cartoon orchestration, Tom and Jerry style, but kawaii version, running and hiding, C minor, 140 BPM, energetic chase, comedic tension, slapstick elements, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter5_chase.mp3] Cartoon chase music, fast and exciting, classic cartoon orchestration, Tom and Jerry style, but kawaii version, running and hiding, C minor, 140 BPM, energetic chase, comedic tension, slapstick elements, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_020">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter5_truth.mp3</span>
+                        <div class="track-title">真相浮现</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 A major</span>
+                        <span class="meta-tag">⏱️ 95 BPM</span>
+                        <span class="meta-tag">💫 emotional,touching,warm</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter5_truth.mp3] Emotional revelation music, transformation from mischief to heart, piano solo building to strings, touching moment, character growth, friendship understanding, A major, 95 BPM, emotional and warm, tears of joy, misunderstood but kind, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter5_truth.mp3] Emotional revelation music, transformation from mischief to heart, piano solo building to strings, touching moment, character growth, friendship understanding, A major, 95 BPM, emotional and warm, tears of joy, misunderstood but kind, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter5_truth.mp3] Emotional revelation music, transformation from mischief to heart, piano solo building to strings, touching moment, character growth, friendship understanding, A major, 95 BPM, emotional and warm, tears of joy, misunderstood but kind, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_021">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter5_boss.mp3</span>
+                        <div class="track-title">和解与友情</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 D major</span>
+                        <span class="meta-tag">⏱️ 120 BPM</span>
+                        <span class="meta-tag">💫 heartfelt,moving,triumphant</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter5_boss.mp3] Friendship reconciliation finale, emotional climax, orchestral emotional theme, redemption arc, friendship prevails, group hug feeling, D major, 120 BPM, heartfelt and moving, Kuromi joins the friends, happy ending, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter5_boss.mp3] Friendship reconciliation finale, emotional climax, orchestral emotional theme, redemption arc, friendship prevails, group hug feeling, D major, 120 BPM, heartfelt and moving, Kuromi joins the friends, happy ending, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter5_boss.mp3] Friendship reconciliation finale, emotional climax, orchestral emotional theme, redemption arc, friendship prevails, group hug feeling, D major, 120 BPM, heartfelt and moving, Kuromi joins the friends, happy ending, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_022">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter6_entrance.mp3</span>
+                        <div class="track-title">星空入口</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 E major</span>
+                        <span class="meta-tag">⏱️ 100 BPM</span>
+                        <span class="meta-tag">💫 cosmic,dreamy,magical</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter6_entrance.mp3] Dreamy starry entrance, cosmic but kawaii, synthesizer arpeggios with bells, vast space, Little Twin Stars theme, magical portal, E major, 100 BPM, floating in galaxy, shooting stars, nebula colors, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter6_entrance.mp3] Dreamy starry entrance, cosmic but kawaii, synthesizer arpeggios with bells, vast space, Little Twin Stars theme, magical portal, E major, 100 BPM, floating in galaxy, shooting stars, nebula colors, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter6_entrance.mp3] Dreamy starry entrance, cosmic but kawaii, synthesizer arpeggios with bells, vast space, Little Twin Stars theme, magical portal, E major, 100 BPM, floating in galaxy, shooting stars, nebula colors, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_023">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter6_galaxy.mp3</span>
+                        <div class="track-title">银河漫步</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 A major</span>
+                        <span class="meta-tag">⏱️ 95 BPM</span>
+                        <span class="meta-tag">💫 majestic,beautiful,weightless</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter6_galaxy.mp3] Galaxy walking music, weightless and beautiful, ambient electronic with orchestra, space wonder, shimmering sounds, aurora borealis, A major, 95 BPM, slow and majestic, starlight journey, cosmic beauty, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter6_galaxy.mp3] Galaxy walking music, weightless and beautiful, ambient electronic with orchestra, space wonder, shimmering sounds, aurora borealis, A major, 95 BPM, slow and majestic, starlight journey, cosmic beauty, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter6_galaxy.mp3] Galaxy walking music, weightless and beautiful, ambient electronic with orchestra, space wonder, shimmering sounds, aurora borealis, A major, 95 BPM, slow and majestic, starlight journey, cosmic beauty, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_024">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter6_constellation.mp3</span>
+                        <div class="track-title">星座连线</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 108 BPM</span>
+                        <span class="meta-tag">💫 elegant,intelligent,satisfying</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter6_constellation.mp3] Constellation puzzle music, elegant and smart, connecting dots with sound, geometric beauty, harp and celesta, star patterns, C major, 108 BPM, satisfying connections, puzzle solving, light bulb moments, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter6_constellation.mp3] Constellation puzzle music, elegant and smart, connecting dots with sound, geometric beauty, harp and celesta, star patterns, C major, 108 BPM, satisfying connections, puzzle solving, light bulb moments, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter6_constellation.mp3] Constellation puzzle music, elegant and smart, connecting dots with sound, geometric beauty, harp and celesta, star patterns, C major, 108 BPM, satisfying connections, puzzle solving, light bulb moments, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_025">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_chapter6_final.mp3</span>
+                        <div class="track-title">星光庆典</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 135 BPM</span>
+                        <span class="meta-tag">💫 epic,triumphant,celebratory</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_chapter6_final.mp3] Grand finale celebration, all characters together, full orchestral epic with choir, ultimate climax, fireworks and joy, graduation ceremony feeling, C major, 135 BPM, triumphant and emotional, all Sanrio friends, dream come true, best ending ever, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_chapter6_final.mp3] Grand finale celebration, all characters together, full orchestral epic with choir, ultimate climax, fireworks and joy, graduation ceremony feeling, C major, 135 BPM, triumphant and emotional, all Sanrio friends, dream come true, best ending ever, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_chapter6_final.mp3] Grand finale celebration, all characters together, full orchestral epic with choir, ultimate climax, fireworks and joy, graduation ceremony feeling, C major, 135 BPM, triumphant and emotional, all Sanrio friends, dream come true, best ending ever, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_026">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_event_christmas.mp3</span>
+                        <div class="track-title">三丽鸥圣诞派对</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 F major</span>
+                        <span class="meta-tag">⏱️ 120 BPM</span>
+                        <span class="meta-tag">💫 festive,warm,joyful</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_event_christmas.mp3] Christmas Sanrio theme, jingle bells and cute elements, winter wonderland, snowflakes and decorations, classic Christmas melody with kawaii twist, F major, 120 BPM, festive and warm, Hello Kitty Christmas party, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_event_christmas.mp3] Christmas Sanrio theme, jingle bells and cute elements, winter wonderland, snowflakes and decorations, classic Christmas melody with kawaii twist, F major, 120 BPM, festive and warm, Hello Kitty Christmas party, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_event_christmas.mp3] Christmas Sanrio theme, jingle bells and cute elements, winter wonderland, snowflakes and decorations, classic Christmas melody with kawaii twist, F major, 120 BPM, festive and warm, Hello Kitty Christmas party, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_027">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_event_halloween.mp3</span>
+                        <div class="track-title">三丽鸥万圣节</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 D minor</span>
+                        <span class="meta-tag">⏱️ 115 BPM</span>
+                        <span class="meta-tag">💫 playful,spooky,cute</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_event_halloween.mp3] Halloween Sanrio theme, spooky but cute, organ and theremin, trick or treat, not scary, just fun and costumes, D minor, 115 BPM, playful Halloween, Kuromi leading the fun, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_event_halloween.mp3] Halloween Sanrio theme, spooky but cute, organ and theremin, trick or treat, not scary, just fun and costumes, D minor, 115 BPM, playful Halloween, Kuromi leading the fun, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_event_halloween.mp3] Halloween Sanrio theme, spooky but cute, organ and theremin, trick or treat, not scary, just fun and costumes, D minor, 115 BPM, playful Halloween, Kuromi leading the fun, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_028">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_event_valentine.mp3</span>
+                        <div class="track-title">三丽鸥情人节</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 F major</span>
+                        <span class="meta-tag">⏱️ 100 BPM</span>
+                        <span class="meta-tag">💫 romantic,sweet,heartwarming</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_event_valentine.mp3] Valentine Sanrio theme, romantic and sweet, violin and piano, love letters and chocolates, pink hearts everywhere, confession scene, F major, 100 BPM, heartwarming romance, My Melody\'s love story, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_event_valentine.mp3] Valentine Sanrio theme, romantic and sweet, violin and piano, love letters and chocolates, pink hearts everywhere, confession scene, F major, 100 BPM, heartwarming romance, My Melody's love story, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_event_valentine.mp3] Valentine Sanrio theme, romantic and sweet, violin and piano, love letters and chocolates, pink hearts everywhere, confession scene, F major, 100 BPM, heartwarming romance, My Melody\'s love story, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_029">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_story_scene.mp3</span>
+                        <div class="track-title">剧情对话BGM</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 80 BPM</span>
+                        <span class="meta-tag">💫 gentle,emotional,calm</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_story_scene.mp3] Gentle story dialogue background music, emotional and supportive, soft piano with strings, character conversation atmosphere, heartwarming and gentle, C major, 80 BPM, calm and peaceful, story telling music, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_story_scene.mp3] Gentle story dialogue background music, emotional and supportive, soft piano with strings, character conversation atmosphere, heartwarming and gentle, C major, 80 BPM, calm and peaceful, story telling music, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_story_scene.mp3] Gentle story dialogue background music, emotional and supportive, soft piano with strings, character conversation atmosphere, heartwarming and gentle, C major, 80 BPM, calm and peaceful, story telling music, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-BGM_030">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 bgm_victory.mp3</span>
+                        <div class="track-title">关卡完成庆祝</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">🎵 C major</span>
+                        <span class="meta-tag">⏱️ 130 BPM</span>
+                        <span class="meta-tag">💫 triumphant,happy,victorious</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:bgm_victory.mp3] Victory celebration jingle, triumphant and happy, bright brass with chimes, level complete feeling, satisfying reward sound, C major, 130 BPM, short and impactful, game victory music, instrumental')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:bgm_victory.mp3] Victory celebration jingle, triumphant and happy, bright brass with chimes, level complete feeling, satisfying reward sound, C major, 130 BPM, short and impactful, game victory music, instrumental</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:bgm_victory.mp3] Victory celebration jingle, triumphant and happy, bright brass with chimes, level complete feeling, satisfying reward sound, C major, 130 BPM, short and impactful, game victory music, instrumental'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openSuno(); event.stopPropagation();">
+                            🎵 去Suno生成
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section">
+            <div class="category-title">🔊 游戏音效 (15个)</div>
+            <div class="music-grid">
+                
+                <div class="track-card" id="track-SFX_001">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_match_1.mp3</span>
+                        <div class="track-title">消除音效(3连)</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.5s</span>
+                        <span class="meta-tag">🔊 -8dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_match_1.mp3] Cute pop sound, bubble burst, satisfying mobile game match sound, high pitch ding, magical sparkle, short and sweet, kawaii game effect')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_match_1.mp3] Cute pop sound, bubble burst, satisfying mobile game match sound, high pitch ding, magical sparkle, short and sweet, kawaii game effect</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_match_1.mp3] Cute pop sound, bubble burst, satisfying mobile game match sound, high pitch ding, magical sparkle, short and sweet, kawaii game effect'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_002">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_match_2.mp3</span>
+                        <div class="track-title">消除音效(4连)</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.8s</span>
+                        <span class="meta-tag">🔊 -7dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_match_2.mp3] Magical chime, ascending scale, sparkle sound, more satisfying than simple pop, fairy dust magic, mobile game power match, cute and impressive')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_match_2.mp3] Magical chime, ascending scale, sparkle sound, more satisfying than simple pop, fairy dust magic, mobile game power match, cute and impressive</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_match_2.mp3] Magical chime, ascending scale, sparkle sound, more satisfying than simple pop, fairy dust magic, mobile game power match, cute and impressive'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_003">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_match_3.mp3</span>
+                        <div class="track-title">消除音效(5连)</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 1.2s</span>
+                        <span class="meta-tag">🔊 -6dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_match_3.mp3] Epic magical explosion, triumphant chime, rainbow sparkle sound, special achievement, combo celebration, spectacular game effect, cascading joy')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_match_3.mp3] Epic magical explosion, triumphant chime, rainbow sparkle sound, special achievement, combo celebration, spectacular game effect, cascading joy</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_match_3.mp3] Epic magical explosion, triumphant chime, rainbow sparkle sound, special achievement, combo celebration, spectacular game effect, cascading joy'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_004">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_special_match.mp3</span>
+                        <div class="track-title">特殊元素激活</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 1.0s</span>
+                        <span class="meta-tag">🔊 -6dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_special_match.mp3] Power-up activation, electric spark, whoosh and zap, special ability ready, magical transformation, energy charge, super power sound')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_special_match.mp3] Power-up activation, electric spark, whoosh and zap, special ability ready, magical transformation, energy charge, super power sound</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_special_match.mp3] Power-up activation, electric spark, whoosh and zap, special ability ready, magical transformation, energy charge, super power sound'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_005">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_click.mp3</span>
+                        <div class="track-title">按钮点击</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.2s</span>
+                        <span class="meta-tag">🔊 -10dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_click.mp3] Cute button click, soft pop, UI selection sound, kawaii interface feedback, gentle tap, mobile game menu click')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_click.mp3] Cute button click, soft pop, UI selection sound, kawaii interface feedback, gentle tap, mobile game menu click</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_click.mp3] Cute button click, soft pop, UI selection sound, kawaii interface feedback, gentle tap, mobile game menu click'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_006">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_level_complete.mp3</span>
+                        <div class="track-title">关卡完成</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 3.0s</span>
+                        <span class="meta-tag">🔊 -5dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_level_complete.mp3] Victory fanfare, level complete celebration, triumphant music jingle, achievement unlocked, stars appearing sound, happy and rewarding, mobile game win')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_level_complete.mp3] Victory fanfare, level complete celebration, triumphant music jingle, achievement unlocked, stars appearing sound, happy and rewarding, mobile game win</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_level_complete.mp3] Victory fanfare, level complete celebration, triumphant music jingle, achievement unlocked, stars appearing sound, happy and rewarding, mobile game win'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_007">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_level_fail.mp3</span>
+                        <div class="track-title">关卡失败</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 2.0s</span>
+                        <span class="meta-tag">🔊 -8dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_level_fail.mp3] Soft defeat sound, gentle failure jingle, try again encouragement, not scary, cute game over, hopeful retry, uplifting failure')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_level_fail.mp3] Soft defeat sound, gentle failure jingle, try again encouragement, not scary, cute game over, hopeful retry, uplifting failure</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_level_fail.mp3] Soft defeat sound, gentle failure jingle, try again encouragement, not scary, cute game over, hopeful retry, uplifting failure'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_008">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_star_get.mp3</span>
+                        <div class="track-title">获得星星</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.6s</span>
+                        <span class="meta-tag">🔊 -7dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_star_get.mp3] Star collection sound, sparkling chime, achievement ping, magical star appear, twinkle and shine, reward acquisition')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_star_get.mp3] Star collection sound, sparkling chime, achievement ping, magical star appear, twinkle and shine, reward acquisition</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_star_get.mp3] Star collection sound, sparkling chime, achievement ping, magical star appear, twinkle and shine, reward acquisition'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_009">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_coin_get.mp3</span>
+                        <div class="track-title">获得金币</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.4s</span>
+                        <span class="meta-tag">🔊 -8dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_coin_get.mp3] Coin collection, gold pickup sound, treasure acquisition, satisfying money sound, ching ching, cute coins')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_coin_get.mp3] Coin collection, gold pickup sound, treasure acquisition, satisfying money sound, ching ching, cute coins</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_coin_get.mp3] Coin collection, gold pickup sound, treasure acquisition, satisfying money sound, ching ching, cute coins'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_010">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_swap.mp3</span>
+                        <div class="track-title">元素交换</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.3s</span>
+                        <span class="meta-tag">🔊 -10dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_swap.mp3] Swap sound, whoosh slide, element exchange, smooth transition, quick movement, game piece slide')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_swap.mp3] Swap sound, whoosh slide, element exchange, smooth transition, quick movement, game piece slide</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_swap.mp3] Swap sound, whoosh slide, element exchange, smooth transition, quick movement, game piece slide'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_011">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_swap_fail.mp3</span>
+                        <div class="track-title">无效交换</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.4s</span>
+                        <span class="meta-tag">🔊 -10dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_swap_fail.mp3] Invalid move sound, gentle error notification, soft buzz, not allowed action, cute rejection, try again hint')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_swap_fail.mp3] Invalid move sound, gentle error notification, soft buzz, not allowed action, cute rejection, try again hint</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_swap_fail.mp3] Invalid move sound, gentle error notification, soft buzz, not allowed action, cute rejection, try again hint'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_012">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_piece_drop.mp3</span>
+                        <div class="track-title">元素下落</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.2s</span>
+                        <span class="meta-tag">🔊 -12dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_piece_drop.mp3] Gentle drop sound, soft thud, candy falling, cute landing, game piece settle, light impact')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_piece_drop.mp3] Gentle drop sound, soft thud, candy falling, cute landing, game piece settle, light impact</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_piece_drop.mp3] Gentle drop sound, soft thud, candy falling, cute landing, game piece settle, light impact'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_013">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_ice_break.mp3</span>
+                        <div class="track-title">冰块破碎</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.5s</span>
+                        <span class="meta-tag">🔊 -8dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_ice_break.mp3] Ice breaking sound, crystal shatter, frozen block cracking, magical ice melt, glass breaking but cute, frosty destruction')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_ice_break.mp3] Ice breaking sound, crystal shatter, frozen block cracking, magical ice melt, glass breaking but cute, frosty destruction</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_ice_break.mp3] Ice breaking sound, crystal shatter, frozen block cracking, magical ice melt, glass breaking but cute, frosty destruction'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_014">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_chocolate_clear.mp3</span>
+                        <div class="track-title">巧克力清除</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.6s</span>
+                        <span class="meta-tag">🔊 -8dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_chocolate_clear.mp3] Chocolate melting sound, cocoa dissolve, sweet dessert destruction, gooey splash, yummy break')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_chocolate_clear.mp3] Chocolate melting sound, cocoa dissolve, sweet dessert destruction, gooey splash, yummy break</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_chocolate_clear.mp3] Chocolate melting sound, cocoa dissolve, sweet dessert destruction, gooey splash, yummy break'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+                <div class="track-card" id="track-SFX_015">
+                    <div class="track-header">
+                        <span class="filename-badge">📁 sfx_dialogue_pop.mp3</span>
+                        <div class="track-title">对话框弹出</div>
+                    </div>
+                    <div class="track-meta">
+                        <span class="meta-tag">⏱️ 0.3s</span>
+                        <span class="meta-tag">🔊 -10dB</span>
+                    </div>
+                    <div class="prompt-box" onclick="copyText('[FILENAME:sfx_dialogue_pop.mp3] Dialogue box appear, cute popup sound, speech bubble notification, character talk start, friendly alert')">
+                        <div class="prompt-label">📋 点击复制提示词（已含文件名）</div>
+                        <div class="prompt-text">[FILENAME:sfx_dialogue_pop.mp3] Dialogue box appear, cute popup sound, speech bubble notification, character talk start, friendly alert</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="btn-copy" onclick="copyText('[FILENAME:sfx_dialogue_pop.mp3] Dialogue box appear, cute popup sound, speech bubble notification, character talk start, friendly alert'); event.stopPropagation();">
+                            📋 复制
+                        </button>
+                        <button class="btn-generate" onclick="openElevenLabs(); event.stopPropagation();">
+                            🔊 去ElevenLabs
+                        </button>
+                    </div>
+                    <div class="copy-hint">💡 提示：点击上方灰色区域或复制按钮复制完整提示词</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 复制文本
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const filenameMatch = text.match(/\[FILENAME:(.+?)\]/);
+                const filename = filenameMatch ? filenameMatch[1] : '文件';
+                showToast(`✅ ${filename} 提示词已复制！`);
+            }).catch(err => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ 提示词已复制！');
+            });
+        }
+
+        // 复制全部BGM
+        function copyAllBGM() {
+            let allPrompts = '🎵 三丽鸥消消乐 - BGM提示词列表（含文件名）\n';
+            allPrompts += '═══════════════════════════════════════════════════\n\n';
+            allPrompts += '💡 使用说明：\n';
+            allPrompts += '   1. 将下面的提示词逐个复制到 Suno AI 中生成\n';
+            allPrompts += '   2. 每个提示词开头的 [FILENAME:xxx.mp3] 是目标文件名\n';
+            allPrompts += '   3. 生成后请按此文件名保存到 assets/audio/bgm/ 文件夹\n\n';
+            allPrompts += '═══════════════════════════════════════════════════\n\n';
+            allPrompts += `【1】欢迎来到三丽鸥世界\n[FILENAME:bgm_main_theme.mp3] Cute and dreamy opening theme for a Sanrio-themed mobile game, piano melody with gentle strings, magical fairy-tale atmosphere, warm and welcoming, G major, 120 BPM, Studio Ghibli-inspired, light bells, soft synth pads, heartwarming, instrumental only, no vocals\n\n【2】甜品派对准备\n[FILENAME:bgm_chapter1_normal.mp3] Upbeat and cheerful background music for a baking party scene, cute mobile game BGM, xylophone and glockenspiel melody, light electronic beat, pink and sweet atmosphere, F major, 128 BPM, playful and anticipation, Kawaii future bass elements, sugar rush feeling, instrumental\n\n【3】寻找食材\n[FILENAME:bgm_chapter1_explore.mp3] Playful adventure music for searching ingredients, accordion and pizzicato strings, light-hearted exploration, European bakery vibes, quirky and curious, G major, 125 BPM, walking pace, warm acoustic feeling, gentle drums, instrumental\n\n【4】派对布置\n[FILENAME:bgm_chapter1_warm.mp3] Warm and cozy preparation music, string quartet with piano, collaborative and heartwarming, pastel colors atmosphere, C major, 118 BPM, flowing melody, orchestral but light, friendship theme, studio ghibli style orchestration, instrumental\n\n【5】派对开始！\n[FILENAME:bgm_chapter1_boss.mp3] Celebration climax music for party finale, full band arrangement, brass section with strings, triumphant and joyful, upbeat party atmosphere, confetti and balloons feeling, D major, 132 BPM, energetic and festive, carnival elements, bright and colorful, instrumental\n\n【6】音乐盒的秘密\n[FILENAME:bgm_chapter2_musicbox.mp3] Dreamy music box theme, celesta and glockenspiel, ethereal and magical, fairytale forest atmosphere, A minor, 100 BPM, delicate and fragile, sparkling sound effects, innocence and wonder, classical music box melody, instrumental\n\n【7】寻找音符\n[FILENAME:bgm_chapter2_explore.mp3] Exploration music with music box elements, searching for notes, pizzicato strings with soft electronic beat, whimsical and curious, magical journey, E minor, 115 BPM, gentle drive, sparkle effects, mystery but cute, instrumental\n\n【8】旋律拼图\n[FILENAME:bgm_chapter2_warm.mp3] Heartwarming puzzle completion music, building melody layers, strings and woodwinds, satisfying progression, healing atmosphere, warm sunset feeling, C major, 108 BPM, gentle and rewarding, emotional resolution, friends helping theme, instrumental\n\n【9】音乐盒演奏\n[FILENAME:bgm_chapter2_boss.mp3] Grand orchestral finale, My Melody theme variation, full string section with harp, emotional climax, magical concert atmosphere, dreams coming true, F major, 120 BPM, cinematic but cute, waltz rhythm, enchanted garden, instrumental\n\n【10】云端漫步\n[FILENAME:bgm_chapter3_cloud.mp3] Ethereal cloud walking music, airy and floating sensation, synthesizer pads with wind chimes, peaceful and dreamy, soft pan flute, vast sky atmosphere, A major, 90 BPM, slow and relaxing, ambient nature sounds, cotton candy clouds, instrumental\n\n【11】风之试炼\n[FILENAME:bgm_chapter3_wind.mp3] Wind adventure music, flowing and breezy, flute and strings, gentle movement, soaring feeling, open sky, D major, 118 BPM, forward momentum, nature elements, free and light, instrumental\n\n【12】星空接近\n[FILENAME:bgm_chapter3_starry.mp3] Dreamy starry sky approach, twinkling sound effects, celestial bells with soft bass, magical night atmosphere, gentle arpeggios, wonder and beauty, E minor, 100 BPM, floating in space, cosmic but cute, constellation theme, instrumental\n\n【13】云端城堡\n[FILENAME:bgm_chapter3_boss.mp3] Cloud kingdom finale, grand but gentle, piano and orchestra, Cinnamoroll theme, epic sky castle, fluffy and majestic, C major, 125 BPM, triumphant and soft, heavenly choir, cotton cloud orchestra, instrumental\n\n【14】午后的阳光\n[FILENAME:bgm_chapter4_lazy.mp3] Lazy afternoon jazz, warm and cozy, double bass with soft brushes, relaxed vibe, sunny garden, coffee shop atmosphere, F major, 85 BPM, slow and comfortable, lo-fi hip hop elements, napping under tree, instrumental\n\n【15】花园散步\n[FILENAME:bgm_chapter4_garden.mp3] Garden stroll music, acoustic guitar and whistle, light and carefree, flower blooming, walking pace, nature sounds, G major, 110 BPM, casual and happy, bird chirping, gentle breeze, instrumental\n\n【16】下午茶时光\n[FILENAME:bgm_chapter4_tea.mp3] Tea party background music, elegant and cute, harpsichord with strings, Victorian but kawaii, pastry and tea, friends chatting, C major, 105 BPM, genteel and sweet, porcelain cups, macarons and cakes, instrumental\n\n【17】完美的午后\n[FILENAME:bgm_chapter4_boss.mp3] Perfect afternoon finale, satisfying conclusion, full acoustic band, Pompompurin theme, fulfillment and happiness, golden hour, F major, 112 BPM, warm and complete, contented sigh, best day ever, instrumental\n\n【18】捣蛋计划\n[FILENAME:bgm_chapter5_mischief.mp3] Mischievous prank music, playful and slightly naughty, clarinet and xylophone, cartoon villain vibes, but cute and funny, not scary, D minor, 130 BPM, sneaky but adorable, Kuromi theme, prankster energy, instrumental\n\n【19】追逐游戏\n[FILENAME:bgm_chapter5_chase.mp3] Cartoon chase music, fast and exciting, classic cartoon orchestration, Tom and Jerry style, but kawaii version, running and hiding, C minor, 140 BPM, energetic chase, comedic tension, slapstick elements, instrumental\n\n【20】真相浮现\n[FILENAME:bgm_chapter5_truth.mp3] Emotional revelation music, transformation from mischief to heart, piano solo building to strings, touching moment, character growth, friendship understanding, A major, 95 BPM, emotional and warm, tears of joy, misunderstood but kind, instrumental\n\n【21】和解与友情\n[FILENAME:bgm_chapter5_boss.mp3] Friendship reconciliation finale, emotional climax, orchestral emotional theme, redemption arc, friendship prevails, group hug feeling, D major, 120 BPM, heartfelt and moving, Kuromi joins the friends, happy ending, instrumental\n\n【22】星空入口\n[FILENAME:bgm_chapter6_entrance.mp3] Dreamy starry entrance, cosmic but kawaii, synthesizer arpeggios with bells, vast space, Little Twin Stars theme, magical portal, E major, 100 BPM, floating in galaxy, shooting stars, nebula colors, instrumental\n\n【23】银河漫步\n[FILENAME:bgm_chapter6_galaxy.mp3] Galaxy walking music, weightless and beautiful, ambient electronic with orchestra, space wonder, shimmering sounds, aurora borealis, A major, 95 BPM, slow and majestic, starlight journey, cosmic beauty, instrumental\n\n【24】星座连线\n[FILENAME:bgm_chapter6_constellation.mp3] Constellation puzzle music, elegant and smart, connecting dots with sound, geometric beauty, harp and celesta, star patterns, C major, 108 BPM, satisfying connections, puzzle solving, light bulb moments, instrumental\n\n【25】星光庆典\n[FILENAME:bgm_chapter6_final.mp3] Grand finale celebration, all characters together, full orchestral epic with choir, ultimate climax, fireworks and joy, graduation ceremony feeling, C major, 135 BPM, triumphant and emotional, all Sanrio friends, dream come true, best ending ever, instrumental\n\n【26】三丽鸥圣诞派对\n[FILENAME:bgm_event_christmas.mp3] Christmas Sanrio theme, jingle bells and cute elements, winter wonderland, snowflakes and decorations, classic Christmas melody with kawaii twist, F major, 120 BPM, festive and warm, Hello Kitty Christmas party, instrumental\n\n【27】三丽鸥万圣节\n[FILENAME:bgm_event_halloween.mp3] Halloween Sanrio theme, spooky but cute, organ and theremin, trick or treat, not scary, just fun and costumes, D minor, 115 BPM, playful Halloween, Kuromi leading the fun, instrumental\n\n【28】三丽鸥情人节\n[FILENAME:bgm_event_valentine.mp3] Valentine Sanrio theme, romantic and sweet, violin and piano, love letters and chocolates, pink hearts everywhere, confession scene, F major, 100 BPM, heartwarming romance, My Melody's love story, instrumental\n\n【29】剧情对话BGM\n[FILENAME:bgm_story_scene.mp3] Gentle story dialogue background music, emotional and supportive, soft piano with strings, character conversation atmosphere, heartwarming and gentle, C major, 80 BPM, calm and peaceful, story telling music, instrumental\n\n【30】关卡完成庆祝\n[FILENAME:bgm_victory.mp3] Victory celebration jingle, triumphant and happy, bright brass with chimes, level complete feeling, satisfying reward sound, C major, 130 BPM, short and impactful, game victory music, instrumental\n\n`;
+
+            navigator.clipboard.writeText(allPrompts).then(() => {
+                showToast('✅ 全部30首BGM提示词已复制（含文件名）！');
+            });
+        }
+
+        // 复制全部音效
+        function copyAllSFX() {
+            let allPrompts = '🔊 三丽鸥消消乐 - 音效提示词列表（含文件名）\n';
+            allPrompts += '═══════════════════════════════════════════════════\n\n';
+            allPrompts += '💡 使用说明：\n';
+            allPrompts += '   1. 将下面的提示词逐个复制到 ElevenLabs 中生成\n';
+            allPrompts += '   2. 每个提示词开头的 [FILENAME:xxx.mp3] 是目标文件名\n';
+            allPrompts += '   3. 生成后请按此文件名保存到 assets/audio/sfx/ 文件夹\n\n';
+            allPrompts += '═══════════════════════════════════════════════════\n\n';
+            allPrompts += `【1】消除音效(3连)\n[FILENAME:sfx_match_1.mp3] Cute pop sound, bubble burst, satisfying mobile game match sound, high pitch ding, magical sparkle, short and sweet, kawaii game effect\n\n【2】消除音效(4连)\n[FILENAME:sfx_match_2.mp3] Magical chime, ascending scale, sparkle sound, more satisfying than simple pop, fairy dust magic, mobile game power match, cute and impressive\n\n【3】消除音效(5连)\n[FILENAME:sfx_match_3.mp3] Epic magical explosion, triumphant chime, rainbow sparkle sound, special achievement, combo celebration, spectacular game effect, cascading joy\n\n【4】特殊元素激活\n[FILENAME:sfx_special_match.mp3] Power-up activation, electric spark, whoosh and zap, special ability ready, magical transformation, energy charge, super power sound\n\n【5】按钮点击\n[FILENAME:sfx_click.mp3] Cute button click, soft pop, UI selection sound, kawaii interface feedback, gentle tap, mobile game menu click\n\n【6】关卡完成\n[FILENAME:sfx_level_complete.mp3] Victory fanfare, level complete celebration, triumphant music jingle, achievement unlocked, stars appearing sound, happy and rewarding, mobile game win\n\n【7】关卡失败\n[FILENAME:sfx_level_fail.mp3] Soft defeat sound, gentle failure jingle, try again encouragement, not scary, cute game over, hopeful retry, uplifting failure\n\n【8】获得星星\n[FILENAME:sfx_star_get.mp3] Star collection sound, sparkling chime, achievement ping, magical star appear, twinkle and shine, reward acquisition\n\n【9】获得金币\n[FILENAME:sfx_coin_get.mp3] Coin collection, gold pickup sound, treasure acquisition, satisfying money sound, ching ching, cute coins\n\n【10】元素交换\n[FILENAME:sfx_swap.mp3] Swap sound, whoosh slide, element exchange, smooth transition, quick movement, game piece slide\n\n【11】无效交换\n[FILENAME:sfx_swap_fail.mp3] Invalid move sound, gentle error notification, soft buzz, not allowed action, cute rejection, try again hint\n\n【12】元素下落\n[FILENAME:sfx_piece_drop.mp3] Gentle drop sound, soft thud, candy falling, cute landing, game piece settle, light impact\n\n【13】冰块破碎\n[FILENAME:sfx_ice_break.mp3] Ice breaking sound, crystal shatter, frozen block cracking, magical ice melt, glass breaking but cute, frosty destruction\n\n【14】巧克力清除\n[FILENAME:sfx_chocolate_clear.mp3] Chocolate melting sound, cocoa dissolve, sweet dessert destruction, gooey splash, yummy break\n\n【15】对话框弹出\n[FILENAME:sfx_dialogue_pop.mp3] Dialogue box appear, cute popup sound, speech bubble notification, character talk start, friendly alert\n\n`;
+
+            navigator.clipboard.writeText(allPrompts).then(() => {
+                showToast('✅ 全部15个音效提示词已复制（含文件名）！');
+            });
+        }
+
+        // 打开Suno AI
+        function openSuno() {
+            window.open('https://suno.ai', '_blank');
+            showToast('🎵 请在 Suno AI 中选择 Custom Mode → Instrumental');
+        }
+
+        // 打开ElevenLabs
+        function openElevenLabs() {
+            window.open('https://elevenlabs.io/sound-effects', '_blank');
+            showToast('🔊 请在 ElevenLabs 中粘贴音效提示词');
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
