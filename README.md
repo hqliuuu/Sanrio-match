@@ -177,3 +177,4 @@ const destroyed = obstacleManager.processMatches(matches)
 ## 📄 授权
 
 本项目仅供学习交流使用。
+# Sanrio
